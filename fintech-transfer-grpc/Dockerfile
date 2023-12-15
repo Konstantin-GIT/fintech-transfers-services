@@ -18,4 +18,4 @@ COPY ./ .
 
 RUN gradle installDist
 
-CMD build/install/fintech-transfers-grpc/bin/fintech-transfers-grpc
+CMD build/install/fintech-transfer-grpc/bin/fintech-transfer-grpc

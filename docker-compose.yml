@@ -14,9 +14,9 @@ services:
       - ./fintech-account-grpc:/app
     networks:
       - backend
-  fintech-transfers-grpc:
+  fintech-transfer-grpc:
     build:
-      context: ./fintech-transfers-grpc
+      context: ./fintech-transfer-grpc
       dockerfile: Dockerfile
     ports:
       - "5007:5007"
@@ -26,7 +26,7 @@ services:
       - SPRING_PROFILES_ACTIVE=dev
       - PORT=5007
     volumes:
-      - ./fintech-transfers-grpc:/app
+      - ./fintech-transfer-grpc:/app
     networks:
       - backend
   fintech-postgres:
