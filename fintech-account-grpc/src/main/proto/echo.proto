@@ -1,0 +1,10 @@
+syntax = "proto3";
+option java_package = "com.workout.example";
+
+service EchoService {
+    rpc SayHello (Message) returns (Message);
+}
+
+message Message {
+    string text = 1;
+}

@@ -1,0 +1,43 @@
+version: '3'
+services:
+  fintech-account-grpc:
+    build:
+      context: ./fintech-account-grpc
+      dockerfile: Dockerfile
+    ports:
+      - "5003:5003"
+      - "6566:6566"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - PORT=5003
+    volumes:
+      - ./fintech-account-grpc:/app
+    networks:
+      - backend
+  fintech-transfers-grpc:
+    build:
+      context: ./fintech-transfers-grpc
+      dockerfile: Dockerfile
+    ports:
+      - "5007:5007"
+      - "6567:6567"
+
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - PORT=5007
+    volumes:
+      - ./fintech-transfers-grpc:/app
+    networks:
+      - backend
+  fintech-postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: fintech-db
+      POSTGRES_USER: SU
+      POSTGRES_PASSWORD: PWD
+    ports:
+      - "5437:5432"
+    networks:
+      - backend
+networks:
+  backend:

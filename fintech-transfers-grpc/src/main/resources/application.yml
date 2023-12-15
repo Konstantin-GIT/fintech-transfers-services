@@ -1,0 +1,22 @@
+server:
+  port: 5007
+
+grpc:
+  port: 6567
+
+spring:
+  profiles:
+    active: dev
+
+  datasource:
+    url: jdbc:postgresql://fintech-postgres:5432/fintech-db
+    username: SU
+    password: PWD
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+base-url: /api

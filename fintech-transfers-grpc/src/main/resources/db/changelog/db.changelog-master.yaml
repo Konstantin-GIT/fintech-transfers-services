@@ -1,0 +1,36 @@
+databaseChangeLog:
+    - changeSet:
+          id: create-transfer-table
+          author: SU
+          changes:
+              - createTable:
+                    columns:
+                        - column:
+                              autoIncrement: true
+                              constraints:
+                                  nullable: false
+                                  primaryKey: true
+                                  primaryKeyName: transfersPK
+                              name: id
+                              type: BIGINT
+                        - column:
+                              name: debit_account_code
+                              constraints:
+                                  nullable: false
+                              type: VARCHAR(255)
+                        - column:
+                              name: credit_account_code
+                              constraints:
+                                  nullable: false
+                              type: VARCHAR(255)
+                        - column:
+                              name: transfer_amount
+                              constraints:
+                                  nullable: false
+                              type: NUMERIC(19, 2)
+                        - column:
+                              name: creation_date
+                              constraints:
+                                  nullable: false
+                              type: TIMESTAMP(6)
+                    tableName: transfers

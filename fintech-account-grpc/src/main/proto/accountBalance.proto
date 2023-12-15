@@ -1,0 +1,15 @@
+syntax = "proto3";
+option java_package = "com.workout.example";
+
+service AccountBalanceService {
+    rpc changeAccountBalance (MessageRequest) returns (MessageResponse);
+}
+
+message MessageRequest {
+    string codeAccount = 1;
+    string  amountOfBalanceChange = 2;
+}
+
+message MessageResponse {
+    string status = 1;
+}

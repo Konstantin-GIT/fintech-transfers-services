@@ -1,0 +1,106 @@
+plugins {
+    id 'application'
+    id 'org.springframework.boot' version '3.1.1'
+    id 'io.spring.dependency-management' version '1.1.4'
+    id "io.github.lognet.grpc-spring-boot" version '5.1.5'
+    id 'org.liquibase.gradle' version '2.2.0'
+}
+
+application {
+    mainClass = 'com.workout.AppApplication'
+}
+
+configurations.all {
+    resolutionStrategy.eachDependency { details ->
+        if ("io.grpc".equalsIgnoreCase(details.requested.group)) {
+            details.useVersion "1.58.0"
+        }
+    }
+}
+wrapper {
+    gradleVersion = '8.5'
+    distributionType = Wrapper.DistributionType.ALL
+}
+
+compileJava {
+    options.release = 20
+    options.encoding = 'UTF-8'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(20)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok'
+    implementation 'org.springframework.boot:spring-boot-starter'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'io.github.lognet:grpc-spring-boot-starter:5.1.5'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'jakarta.transaction:jakarta.transaction-api:2.0.1'
+    implementation 'org.liquibase:liquibase-core'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.postgresql:postgresql:42.2.24'
+
+    annotationProcessor(
+            'org.projectlombok:lombok',
+            'jakarta.persistence:jakarta.persistence-api:3.1.0',
+            'com.querydsl:querydsl-apt:5.0.0:jakarta'
+    )
+
+    liquibaseRuntime(
+            sourceSets.main.output,
+            'org.liquibase:liquibase-core',
+            'info.picocli:picocli:4.7.1',
+            'org.liquibase.ext:liquibase-hibernate6:4.21.1',
+            'org.springframework.boot:spring-boot-starter-data-jpa',
+    )
+}
+
+liquibase {
+    activities {
+        main {
+            changelogFile 'src/main/resources/db/changelog/db.changelog-master.yaml'
+            url 'jdbc:postgresql://localhost:5437/fintech-account-db'
+            referenceUrl 'hibernate:spring:hexlet.code.model.' +
+                    '?dialect=org.hibernate.dialect.PostgreSQLDialect' +
+                    '&hibernate.physical_naming_strategy=org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy'
+        }
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+/*subprojects {
+group = 'com.workout'
+version = '0.0.1-SNAPSHOT'
+archivesBaseName = 'example'*/
+
+/*
+// Проект для первого микросервиса
+    project(':fintech-transfer') {
+        dependencies {
+            implementation 'io.github.lognet:grpc-spring-boot-starter:5.1.5'
+            // Другие зависимости для первого микросервиса
+        }
+    }
+
+// Проект для второго микросервиса
+    project(':fintech-account') {
+        dependencies {
+            implementation 'io.github.lognet:grpc-spring-boot-starter:5.1.5'
+            // Другие зависимости для второго микросервиса
+        }*/
+
