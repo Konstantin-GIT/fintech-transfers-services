@@ -17,6 +17,12 @@ public class AccountController {
     public static final String BALANCES = "/balances";
     private final AccountRepository accountRepository;
 
+    @GetMapping("/welcome")
+    @ResponseStatus(OK)
+    public String getGreeting() {
+          return "Welcome to fintech-account-grpc service";
+    }
+
     @GetMapping(BALANCES)
     @ResponseStatus(OK)
     public List<Account> index() {
