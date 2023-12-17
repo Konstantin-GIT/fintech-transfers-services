@@ -14,6 +14,8 @@ services:
       - ./fintech-account-grpc:/app
     networks:
       - backend
+    depends_on:
+      - fintech-postgres
   fintech-transfer-grpc:
     build:
       context: ./fintech-transfer-grpc
@@ -29,6 +31,9 @@ services:
       - ./fintech-transfer-grpc:/app
     networks:
       - backend
+    depends_on:
+      - fintech-postgres
+
   fintech-postgres:
     image: postgres:latest
     environment:

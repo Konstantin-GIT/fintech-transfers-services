@@ -13,6 +13,8 @@ import { catchError, map, tap } from 'rxjs/operators';
 export class AccountService {
   private apiUrl = 'http://localhost:5003/api/accounts';
 
+  accounts = new Observable<Account[]>;
+
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' ,
      'Access-Control-Allow-Origin': 'http://localhost:4200' // Замените на URL вашего Angular-приложения
@@ -22,6 +24,7 @@ export class AccountService {
   constructor(private http: HttpClient) {}
 
   getAccounts(): Observable<Account[]> {
-    return this.http.get<Account[]>(this.apiUrl, this.httpOptions);
+    this.accounts = this.http.get<Account[]>(this.apiUrl, this.httpOptions);
+    return this.accounts;
   }
 }

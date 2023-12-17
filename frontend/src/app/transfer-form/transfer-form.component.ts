@@ -1,22 +1,53 @@
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { TransferService } from '../transfer/transfer.service';
+import { AccountService } from '../account/account.service';
+import { Account } from '../account/account.model';
+import {map, startWith} from 'rxjs/operators';
+import {Observable} from 'rxjs';
+
 
 @Component({
   selector: 'app-transfer-form',
   templateUrl: './transfer-form.component.html'
 })
-export class TransferFormComponent {
+export class TransferFormComponent implements OnInit  {
   createTransferForm: FormGroup;
+  myControl = new FormControl('');
+  accountCodes: string[];
 
-  constructor(private fb: FormBuilder, private transferService: TransferService) {
+  filteredAccountCodes: Observable<string[]>;
+
+  constructor(private fb: FormBuilder, private transferService: TransferService, private accountService: AccountService) {
     this.createTransferForm = this.fb.group({
       debitAccountCode: ['', Validators.required],
       creditAccountCode: ['', Validators.required],
       transferAmount: ['', Validators.required],
+
+    });
+    this.accountCodes = [];
+    this.filteredAccountCodes = new Observable<string[]>();
+    this.accountService.accounts.subscribe((accounts) => {
+      this.accountCodes = accounts.map(account => account.code);
     });
   }
+
+  ngOnInit() {
+    this.filteredAccountCodes = this.myControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filter(value || '')),
+    );
+
+    this.accountService.accounts.subscribe((accounts) => {
+      this.accountCodes = accounts.map(account => account.code);
+    });
+    }
+
+    private _filter(value: string): string[] {
+      const filterValue = value.toLowerCase();
+
+      return this.accountCodes.filter(code => code.toLowerCase().includes(filterValue));
+    }
 
   onSubmit() {
     if (this.createTransferForm.valid) {
@@ -32,6 +63,7 @@ export class TransferFormComponent {
       );
     }
   }
-}
+ }
+
 
 
