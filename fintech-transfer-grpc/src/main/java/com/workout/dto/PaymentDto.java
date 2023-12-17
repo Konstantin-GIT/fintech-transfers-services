@@ -13,11 +13,11 @@ public class PaymentDto {
 
     @NotBlank
     @Size(min = 1)
-    private String debitAccount;
+    private String debitAccountCode;
 
     @NotBlank
     @Size(min = 1)
-    private String creditAccount;
+    private String creditAccountCode;
 
     @NotBlank
     @Size(min = 1)

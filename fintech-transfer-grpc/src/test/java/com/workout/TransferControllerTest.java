@@ -58,7 +58,7 @@ public class TransferControllerTest {
     }
     @Test
     public void testWelcomePage() throws Exception {
-        var result = mockMvc.perform(get("/api/payments/welcome"))
+        var result = mockMvc.perform(get("/api/transfers/welcome"))
             .andExpect(status().isOk())
             .andReturn();
 
@@ -75,7 +75,7 @@ public class TransferControllerTest {
         transfer.setTransferAmount(BigDecimal.valueOf(10));
         transferRepository.save(transfer);
 
-        var response = mockMvc.perform(get("/api/payments"))
+        var response = mockMvc.perform(get("/api/transfers"))
             .andExpect(status().isOk())
             .andReturn()
             .getResponse();

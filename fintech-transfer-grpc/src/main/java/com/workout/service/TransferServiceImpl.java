@@ -22,7 +22,14 @@ public class TransferServiceImpl implements TransferService {
 
         String resultCreditAccount = accountBalanceServiceClient.changeAccountBalance(creditAccount, transferAmount );
 
+
+
+
+
+
+
         System.out.println("resultDebitAccount = " + resultDebitAccount);
+
         System.out.println("resultCreditAccount = " + resultCreditAccount);
 
     }

@@ -11,11 +11,11 @@ import { catchError, map, tap } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class TransferService {
-  private apiUrl = 'http://localhost:5007/api/payments';
+  private apiUrl = 'http://localhost:5007/api/transfers';
 
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' ,
-     'Access-Control-Allow-Origin': 'http://localhost:4200' // Замените на URL вашего Angular-приложения
+     'Access-Control-Allow-Origin': 'http://localhost:4200'
         })
   };
 
@@ -24,5 +24,9 @@ export class TransferService {
   getTransfers(): Observable<Transfer[]> {
     return this.http.get<Transfer[]>(this.apiUrl, this.httpOptions);
   }
+
+    createTransfer(data: any): Observable<any> {
+      return this.http.post(this.apiUrl, data, this.httpOptions);
+    }
 }
 

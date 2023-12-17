@@ -19,7 +19,7 @@ import java.util.List;
 @RequestMapping("${base-url}" + TRANSFER_CONTROLLER_PATH)
 public class TransferController {
 
-    public static final String TRANSFER_CONTROLLER_PATH = "/payments";
+    public static final String TRANSFER_CONTROLLER_PATH = "/transfers";
 
     @Qualifier("TransferServiceImpl")
     private final TransferService transferService;
@@ -38,10 +38,11 @@ public class TransferController {
         return transferService.getTransfers();
     }
 
-    @PutMapping
+    @PostMapping
     @ResponseStatus(OK)
     public String createPayment(@RequestBody @Valid PaymentDto paymentDto) {
-        transferService.createPayment(paymentDto.getDebitAccount(), paymentDto.getCreditAccount(), paymentDto.getTransferAmount());
+        System.out.println("!!!!!!!!!!!!!!!! TEST" + paymentDto);
+        transferService.createPayment(paymentDto.getDebitAccountCode(), paymentDto.getDebitAccountCode(), paymentDto.getTransferAmount());
         return "complied method createPayment";
     }
 

@@ -5,8 +5,6 @@ import { Account } from './account.model';
 
 @Component({
   selector: 'app-account',
-  standalone: true,
-  imports: [NgFor],
   templateUrl: './account.component.html',
   styleUrl: './account.component.css'
 })

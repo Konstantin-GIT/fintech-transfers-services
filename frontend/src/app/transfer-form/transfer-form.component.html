@@ -1,0 +1,21 @@
+<h2>Create transfer</h2>
+
+<form [formGroup]="createTransferForm" (ngSubmit)="onSubmit()">
+  <label>
+    debitAccountCode:
+    <input type="text" formControlName="debitAccountCode" />
+  </label>
+  <br />
+  <label>
+    creditAccountCode:
+    <input type="text" formControlName="creditAccountCode" />
+  </label>
+  <br />
+  <label>
+    transferAmount:
+    <input type="text" formControlName="transferAmount" />
+  </label>
+  <br />
+  <button type="submit" [disabled]="createTransferForm.invalid">Create</button>
+</form>
+
