@@ -13,10 +13,13 @@ import {Observable} from 'rxjs';
 })
 export class TransferFormComponent implements OnInit  {
   createTransferForm: FormGroup;
-  myControl = new FormControl('');
+  debitControl = new FormControl('');
+  creditControl = new FormControl('');
+
   accountCodes: string[];
 
-  filteredAccountCodes: Observable<string[]>;
+  filteredDebitAccountCodes: Observable<string[]>;
+  filteredCreditAccountCodes: Observable<string[]>;
 
   constructor(private fb: FormBuilder, private transferService: TransferService, private accountService: AccountService) {
     this.createTransferForm = this.fb.group({
@@ -26,28 +29,33 @@ export class TransferFormComponent implements OnInit  {
 
     });
     this.accountCodes = [];
-    this.filteredAccountCodes = new Observable<string[]>();
-    this.accountService.accounts.subscribe((accounts) => {
-      this.accountCodes = accounts.map(account => account.code);
-    });
+    this.filteredDebitAccountCodes = new Observable<string[]>();
+    this.filteredCreditAccountCodes = new Observable<string[]>();
   }
 
   ngOnInit() {
-    this.filteredAccountCodes = this.myControl.valueChanges.pipe(
-      startWith(''),
-      map(value => this._filter(value || '')),
-    );
-
     this.accountService.accounts.subscribe((accounts) => {
       this.accountCodes = accounts.map(account => account.code);
+
+      this.filteredDebitAccountCodes = this.debitControl.valueChanges.pipe(
+        startWith(''),
+        map(value => this._filter(value || '')),
+      );
+
+      this.filteredCreditAccountCodes = this.creditControl.valueChanges.pipe(
+        startWith(''),
+        map(value => this._filter(value || '')),
+      );
+
+
     });
-    }
+  }
 
-    private _filter(value: string): string[] {
-      const filterValue = value.toLowerCase();
-
-      return this.accountCodes.filter(code => code.toLowerCase().includes(filterValue));
-    }
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+    console.log(this.accountCodes);
+    return this.accountCodes.filter(code => code.toLowerCase().includes(filterValue));
+  }
 
   onSubmit() {
     if (this.createTransferForm.valid) {

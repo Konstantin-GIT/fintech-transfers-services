@@ -2,29 +2,36 @@
 
 <form [formGroup]="createTransferForm" (ngSubmit)="onSubmit()">
 
-  <mat-form-field class="example-full-width">
-    <mat-label>Number</mat-label>
+  <mat-form-field>
+    <mat-label>Debit account code</mat-label>
     <input type="text"
            placeholder="Pick one"
            aria-label="Number"
            matInput
-           [formControl]="myControl"
-           [matAutocomplete]="auto">
-    <mat-autocomplete autoActiveFirstOption #auto="matAutocomplete">
-      @for (accountCode of filteredAccountCodes | async; track accountCode) {
+           [formControl]="debitControl"
+           [matAutocomplete]="debitAuto">
+    <mat-autocomplete autoActiveFirstOption #debitAuto="matAutocomplete">
+      @for (accountCode of filteredDebitAccountCodes | async; track accountCode) {
       <mat-option [value]="accountCode">{{accountCode}}</mat-option>
       }
     </mat-autocomplete>
   </mat-form-field>
 
-  <br />
-  <label>
-    creditAccountCode:
-    <input type="text" formControlName="creditAccountCode" />
-  </label>
-  <br />
+  <mat-form-field>
+    <mat-label>Credit account code</mat-label>
+    <input type="text"
+           placeholder="Pick one"
+           aria-label="Number"
+           matInput
+           [formControl]="creditControl"
+           [matAutocomplete]="creditAuto">
+    <mat-autocomplete autoActiveFirstOption #creditAuto="matAutocomplete">
+      @for (accountCode of filteredCreditAccountCodes | async; track accountCode) {
+      <mat-option [value]="accountCode">{{accountCode}}</mat-option>
+      }
+    </mat-autocomplete>
+  </mat-form-field>
 
-  <br />
   <mat-form-field>
     <mat-label >transferAmount</mat-label>
     <input matInput formControlName="transferAmount">
