@@ -75,11 +75,18 @@ liquibase {
     activities {
         main {
             changelogFile 'src/main/resources/db/changelog/db.changelog-master.yaml'
-            url 'jdbc:postgresql://localhost:5437/fintech-account-db'
+            url 'jdbc:postgresql://localhost:5437/fintech-db'
             referenceUrl 'hibernate:spring:hexlet.code.model.' +
                     '?dialect=org.hibernate.dialect.PostgreSQLDialect' +
                     '&hibernate.physical_naming_strategy=org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy'
         }
+      /*  test {
+            changelogFile 'src/main/resources/db/changelog/db.changelog-test.yaml'
+            url 'jdbc:postgresql://localhost:5437/fintech-account-db'
+            referenceUrl 'hibernate:spring:hexlet.code.model.' +
+                    '?dialect=org.hibernate.dialect.PostgreSQLDialect' +
+                    '&hibernate.physical_naming_strategy=org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy'
+        }*/
     }
 }
 

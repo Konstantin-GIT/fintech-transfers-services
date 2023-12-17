@@ -1,0 +1,21 @@
+<h2>Accounts</h2>
+
+<table>
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Account Code</th>
+    <th>Balance</th>
+    <th>creationDate</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let account of accounts">
+    <td>{{ account.id }}</td>
+    <td>{{ account.code }}</td>
+    <td>{{ account.balance }}</td>
+    <td>{{ account.creationDate }}</td>
+  </tr>
+  </tbody>
+</table>
+

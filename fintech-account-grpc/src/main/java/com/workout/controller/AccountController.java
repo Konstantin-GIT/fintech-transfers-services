@@ -11,10 +11,10 @@ import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 @AllArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("${base-url}" + ACCOUNT_CONTROLLER_PATH)
 public class AccountController {
     public static final String ACCOUNT_CONTROLLER_PATH = "/accounts";
-    public static final String BALANCES = "/balances";
     private final AccountRepository accountRepository;
 
     @GetMapping("/welcome")
@@ -23,10 +23,12 @@ public class AccountController {
           return "Welcome to fintech-account-grpc service";
     }
 
-    @GetMapping(BALANCES)
+    @GetMapping()
     @ResponseStatus(OK)
     public List<Account> index() {
         //  return "null";
+        System.out.println("TEST !!!!!!!!!!!!!!!!!!!!!!!!!!" + accountRepository.findAll());
+
         return accountRepository.findAll();
     }
 }

@@ -1,9 +1,7 @@
 package com.workout;
 
-import com.workout.example.Echo;
-import com.workout.example.EchoServiceGrpc;
-import com.workout.model.Account;
-import com.workout.repository.AccountRepository;
+import com.workout.model.Transfer;
+import com.workout.repository.TransferRepository;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import org.assertj.core.api.Assertions;
@@ -33,15 +31,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ContextConfiguration(initializers = {AccountControllerTest.Initializer.class})
+@ContextConfiguration(initializers = {TransferControllerTest.Initializer.class})
 @Testcontainers
-public class AccountControllerTest {
+public class TransferControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private AccountRepository accountRepository;
+    private TransferRepository transferRepository;
 
     @Container
     public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest")
@@ -60,48 +58,32 @@ public class AccountControllerTest {
     }
     @Test
     public void testWelcomePage() throws Exception {
-        var result = mockMvc.perform(get("/api/accounts/welcome"))
+        var result = mockMvc.perform(get("/api/payments/welcome"))
             .andExpect(status().isOk())
             .andReturn();
 
         var body = result.getResponse().getContentAsString();
-        assertThat(body).contains("Welcome to fintech-account-grpc service");
+        assertThat(body).contains("Welcome to fintech-transfer-grpc service");
     }
 
     @Test
     public void testIndex() throws Exception {
 
-        Account account = new Account();
-        account.setBalance(BigDecimal.valueOf(100));
-        account.setCode("987987");
-        accountRepository.save(account);
+        Transfer transfer = new Transfer();
+        transfer.setCreditAccountCode("code1");
+        transfer.setDebitAccountCode("code2");
+        transfer.setTransferAmount(BigDecimal.valueOf(10));
+        transferRepository.save(transfer);
 
-        var response = mockMvc.perform(get("/api/accounts"))
+        var response = mockMvc.perform(get("/api/payments"))
             .andExpect(status().isOk())
             .andReturn()
             .getResponse();
 
-        final List<Account> tasks = fromJson(response.getContentAsString(), new TypeReference<>() { });
-        final List<Account> expected = accountRepository.findAll();
+        final List<Transfer> transfers = fromJson(response.getContentAsString(), new TypeReference<>() { });
+        final List<Transfer> expected = transferRepository.findAll();
 
-        Assertions.assertThat(tasks).containsAll(expected);
-
-    }
-
-
-    @LocalRunningGrpcPort
-    int port;
-
-    @Test
-    void echoTest() {
-        final ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", port)
-            .usePlaintext()
-            .build();
-        final Echo.Message response = EchoServiceGrpc.newBlockingStub(channel)
-            .sayHello(Echo.Message.newBuilder()
-                .setText("Hello")
-                .build());
-        assertEquals("HELLO", response.getText());
+        Assertions.assertThat(transfers).containsAll(expected);
 
     }
 

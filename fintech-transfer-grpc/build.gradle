@@ -65,25 +65,29 @@ dependencies {
             'org.liquibase.ext:liquibase-hibernate6:4.21.1',
             'org.springframework.boot:spring-boot-starter-data-jpa'
     )
+
+    testImplementation 'org.testcontainers:testcontainers:1.19.3'
+    testImplementation 'org.testcontainers:postgresql:1.19.3'
+    testImplementation 'org.testcontainers:junit-jupiter:1.19.3'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
 }
 
-
+/*
 liquibase {
     activities {
         main {
             changelogFile 'src/main/resources/db/changelog/db.changelog-master.yaml'
-            url 'jdbc:postgresql://localhost:5437/fintech-transfer-db'
+            url 'jdbc:postgresql://localhost:5437/fintech-db'
             referenceUrl 'hibernate:spring:hexlet.code.model.' +
                     '?dialect=org.hibernate.dialect.PostgreSQLDialect' +
                     '&hibernate.physical_naming_strategy=org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy'
         }
     }
 }
-
+*/
 /*subprojects {
 group = 'com.workout'
 version = '0.0.1-SNAPSHOT'

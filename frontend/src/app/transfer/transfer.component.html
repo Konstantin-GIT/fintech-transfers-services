@@ -1,0 +1,23 @@
+<h2>Transfers</h2>
+
+<table>
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>debitAccountCode</th>
+    <th>creditAccountCode</th>
+    <th>transferAmount</th>
+    <th>creationDate</th>
+  </tr>
+  </thead>
+  <tbody>
+  <tr *ngFor="let transfer of transfers">
+    <td>{{ transfer.id }}</td>
+    <td>{{ transfer.debitAccountCode }}</td>
+    <td>{{ transfer.creditAccountCode }}</td>
+    <td>{{ transfer.transferAmount }}</td>
+    <td>{{ transfer.creationDate }}</td>
+  </tr>
+  </tbody>
+</table>
+

@@ -15,6 +15,7 @@ import java.util.List;
 
 @RestController
 @AllArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("${base-url}" + TRANSFER_CONTROLLER_PATH)
 public class TransferController {
 
@@ -23,9 +24,17 @@ public class TransferController {
     @Qualifier("TransferServiceImpl")
     private final TransferService transferService;
 
+
+    @GetMapping("/welcome")
+    @ResponseStatus(OK)
+    public String getGreeting() {
+        return "Welcome to fintech-transfer-grpc service";
+    }
+
     @GetMapping
     @ResponseStatus(OK)
     public List<Transfer> index() {
+         System.out.println("TEST !!!!!!!!!!!!!!!!!!!!!!!!!!" + transferService.getTransfers());
         return transferService.getTransfers();
     }
 

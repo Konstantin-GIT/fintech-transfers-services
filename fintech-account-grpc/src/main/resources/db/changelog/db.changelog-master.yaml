@@ -33,7 +33,145 @@ databaseChangeLog:
                     nullable: false
                     updatable: false
         - addDefaultValue:
-            columnDataType: "NUMERIC(19, 2)"
             columnName: "balance"
             defaultValue: 0.00
             tableName: "accounts"
+  - changeSet:
+      id: create-transfer-table
+      author: SU
+      changes:
+        - createTable:
+            columns:
+              - column:
+                  autoIncrement: true
+                  constraints:
+                    nullable: false
+                    primaryKey: true
+                    primaryKeyName: transfersPK
+                  name: id
+                  type: BIGINT
+              - column:
+                  name: debit_account_code
+                  constraints:
+                    nullable: false
+                  type: VARCHAR(255)
+              - column:
+                  name: credit_account_code
+                  constraints:
+                    nullable: false
+                  type: VARCHAR(255)
+              - column:
+                  name: transfer_amount
+                  constraints:
+                    nullable: false
+                  type: NUMERIC(19, 2)
+              - column:
+                  name: creation_date
+                  constraints:
+                    nullable: false
+                  type: TIMESTAMP(6)
+            tableName: transfers
+  - changeSet:
+      id: insert-test-data
+      author: SU
+      changes:
+        - insert:
+            tableName: accounts
+            columns:
+              - column:
+                  name: id
+                  value: 1
+              - column:
+                  name: code
+                  value: 'code1'
+              - column:
+                  name: balance
+                  value: 100.00
+              - column:
+                  name: creation_date
+                  value: '2022-01-01T00:00:00'
+        - insert:
+            tableName: accounts
+            columns:
+              - column:
+                  name: id
+                  value: 2
+              - column:
+                  name: code
+                  value: 'code2'
+              - column:
+                  name: balance
+                  value: 200.00
+              - column:
+                  name: creation_date
+                  value: '2022-01-02T00:00:00'
+        - insert:
+            tableName: accounts
+            columns:
+              - column:
+                  name: id
+                  value: 3
+              - column:
+                  name: code
+                  value: 'code3'
+              - column:
+                  name: balance
+                  value: 1000.00
+              - column:
+                  name: creation_date
+                  value: '2022-01-01T00:00:00'
+        - insert:
+            tableName: accounts
+            columns:
+              - column:
+                  name: id
+                  value: 4
+              - column:
+                  name: code
+                  value: 'code4'
+              - column:
+                  name: balance
+                  value: 2000.00
+              - column:
+                  name: creation_date
+                  value: '2022-01-02T00:00:00'
+  - changeSet:
+      id: insert-test-data-transfers
+      author: SU
+      changes:
+        - insert:
+            tableName: transfers
+            columns:
+              - column:
+                  name: id
+                  value: 1
+              - column:
+                  name: debit_account_code
+                  value: 'code1'
+              - column:
+                  name: credit_account_code
+                  value: 'code2'
+              - column:
+                  name: transfer_amount
+                  value: 100.00
+              - column:
+                  name: creation_date
+                  value: '2022-01-01T00:00:00'
+        - insert:
+            tableName: transfers
+            columns:
+              - column:
+                  name: id
+                  value: 2
+              - column:
+                  name: debit_account_code
+                  value: 'code2'
+              - column:
+                  name: credit_account_code
+                  value: 'code1'
+              - column:
+                  name: transfer_amount
+                  value: 200.00
+              - column:
+                  name: creation_date
+                  value: '2022-01-02T00:00:00'

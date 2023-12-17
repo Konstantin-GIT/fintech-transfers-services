@@ -33,7 +33,6 @@ public class Transfer {
     private String creditAccountCode;
 
     @Column(name = "transfer_amount", nullable = false)
-    @Size(min = 1)
     private BigDecimal transferAmount;
 
     @Column(name = "creation_date", nullable = false)
