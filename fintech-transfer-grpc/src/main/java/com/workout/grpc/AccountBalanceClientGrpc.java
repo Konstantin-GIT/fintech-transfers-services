@@ -8,9 +8,9 @@ import io.grpc.ManagedChannelBuilder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AccountBalanceServiceClient {
+public class AccountBalanceClientGrpc {
 
-    public String changeAccountBalance(String codeAccount, String transferAmount) {
+    public String changeAccountBalance(String codeAccount, String transferAmount, String transferId ) {
 
         ManagedChannel channel = ManagedChannelBuilder.forAddress("fintech-account-grpc", 6566)
             .usePlaintext()
@@ -18,18 +18,17 @@ public class AccountBalanceServiceClient {
 
         AccountBalanceServiceBlockingStub accountBalanceServiceBlockingStub = AccountBalanceServiceGrpc.newBlockingStub(channel);
 
-        // Создаем объект запроса
         AccountBalance.MessageRequest request = AccountBalance.MessageRequest.newBuilder()
             .setCodeAccount(codeAccount)
             .setAmountOfBalanceChange(transferAmount)
+            .setTransferId(transferId)
             .build();
 
-        // Вызываем удаленный метод и получаем ответ
         AccountBalance.MessageResponse response = accountBalanceServiceBlockingStub.changeAccountBalance(request);
         System.out.println("Response from SERVER method changeAccountBalance =  " + response.getStatus());
 
         channel.shutdown();
-        // Возвращаем строковое представление ответа
+
         return response.getStatus();
     }
 }

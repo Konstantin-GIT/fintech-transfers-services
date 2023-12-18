@@ -1,11 +1,12 @@
 package com.workout.controller;
 
-import com.workout.dto.PaymentDto;
+import com.workout.dto.TransferDto;
 import com.workout.model.Transfer;
 import com.workout.service.TransferService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import static com.workout.controller.TransferController.TRANSFER_CONTROLLER_PATH;
+import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -39,10 +40,19 @@ public class TransferController {
     }
 
     @PostMapping
-    @ResponseStatus(OK)
-    public String createPayment(@RequestBody @Valid PaymentDto paymentDto) {
-        System.out.println("!!!!!!!!!!!!!!!! TEST" + paymentDto);
-        transferService.createPayment(paymentDto.getDebitAccountCode(), paymentDto.getDebitAccountCode(), paymentDto.getTransferAmount());
+    @ResponseStatus(CREATED)
+    public String createPayment(@RequestBody @Valid TransferDto transferDto) {
+        System.out.println("!!!!!!!!createPayment() transferDto = " + transferDto);
+
+        Transfer createdTransfer = transferService.createTransfer(transferDto, "started");
+        System.out.println("!!!!!!createPayment() -> createdTransfer = " + createdTransfer);
+
+        transferService.createPayment(transferDto.getDebitAccountCode(),
+                                        transferDto.getCreditAccountCode(),
+                                        transferDto.getTransferAmount(),
+                                        createdTransfer.getId().toString()
+        );
+
         return "complied method createPayment";
     }
 

@@ -1,7 +1,9 @@
 package com.workout;
 
+import com.workout.dto.TransferDto;
 import com.workout.model.Transfer;
 import com.workout.repository.TransferRepository;
+import com.workout.service.TransferService;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import org.assertj.core.api.Assertions;
@@ -16,8 +18,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -26,7 +30,9 @@ import java.math.BigDecimal;
 import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -40,6 +46,9 @@ public class TransferControllerTest {
 
     @Autowired
     private TransferRepository transferRepository;
+
+    @Autowired
+    private TransferService transferService;
 
     @Container
     public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest")
@@ -72,6 +81,7 @@ public class TransferControllerTest {
         Transfer transfer = new Transfer();
         transfer.setCreditAccountCode("code1");
         transfer.setDebitAccountCode("code2");
+        transfer.setTransferStatus("started");
         transfer.setTransferAmount(BigDecimal.valueOf(10));
         transferRepository.save(transfer);
 
@@ -85,6 +95,30 @@ public class TransferControllerTest {
 
         Assertions.assertThat(transfers).containsAll(expected);
 
+    }
+
+    @Test
+    public void createdTransfer() throws Exception {
+
+        TransferDto transferDto = new TransferDto();
+        transferDto.setCreditAccountCode("code1");
+        transferDto.setDebitAccountCode("code2");
+        transferDto.setTransferAmount("9999.00");
+
+
+     /*   var response = mockMvc.perform(get("/api/transfers")
+            .content(MAPPER.writeValueAsString(transferDto))
+            .contentType(APPLICATION_JSON))
+            .andExpect(status().isCreated())
+            .andReturn()
+            .getResponse();
+*/
+        final Transfer createdTransfer = transferService.createTransfer(transferDto, "started");
+
+     /*   final Transfer createdTransfer = fromJson(response.getContentAsString(), new TypeReference<>() { });*/
+        final Transfer expected = transferRepository.findById(createdTransfer.getId()).get();
+
+        Assertions.assertThat(createdTransfer).isEqualTo(expected);
     }
 
     public static final ObjectMapper MAPPER = new ObjectMapper().findAndRegisterModules();

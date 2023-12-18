@@ -14,4 +14,6 @@ public interface TransferRepository extends JpaRepository<Transfer, Long>,
     CrudRepository<Transfer, Long>, QuerydslPredicateExecutor<Transfer> {
 
     List<Transfer> findAll();
+
+
 }

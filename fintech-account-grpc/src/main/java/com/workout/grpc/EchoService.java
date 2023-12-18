@@ -1,4 +1,4 @@
-package com.workout;
+package com.workout.grpc;
 
 import com.workout.example.Echo;
 import com.workout.example.EchoServiceGrpc;

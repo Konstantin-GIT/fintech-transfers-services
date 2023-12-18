@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "accounts")
 @Data
+@Builder
+@EqualsAndHashCode(of = {"id", "code", "balance"})
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @AllArgsConstructor

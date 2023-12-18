@@ -1,12 +1,15 @@
 package com.workout;
 
+import com.workout.dto.AccountDto;
 import com.workout.example.Echo;
 import com.workout.example.EchoServiceGrpc;
 import com.workout.model.Account;
 import com.workout.repository.AccountRepository;
+import com.workout.service.AccountService;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -20,6 +23,7 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -43,6 +47,9 @@ public class AccountControllerTest {
     @Autowired
     private AccountRepository accountRepository;
 
+    @Autowired
+    private AccountService accountService;
+
     @Container
     public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest")
         .withDatabaseName("fintech-db")
@@ -58,6 +65,12 @@ public class AccountControllerTest {
             ).applyTo(configurableApplicationContext.getEnvironment());
         }
     }
+
+    @BeforeEach
+    public void setUp() {
+        accountRepository.deleteAll();
+    }
+
     @Test
     public void testWelcomePage() throws Exception {
         var result = mockMvc.perform(get("/api/accounts/welcome"))
@@ -86,6 +99,20 @@ public class AccountControllerTest {
 
         Assertions.assertThat(tasks).containsAll(expected);
 
+    }
+
+    @Test
+    public void createdAccount() throws Exception {
+
+        AccountDto accountDto = new AccountDto();
+        accountDto.setCode("code1");
+        accountDto.setAmountOfchange("1000.00");
+
+        final Account createdAccount = accountService.createAccount(accountDto);
+
+        final Account expected = accountRepository.findById(createdAccount.getId()).get();
+
+        Assertions.assertThat(createdAccount).isEqualTo(expected);
     }
 
 

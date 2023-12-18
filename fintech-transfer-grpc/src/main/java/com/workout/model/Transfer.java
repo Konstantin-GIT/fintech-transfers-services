@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.apache.commons.lang3.builder.HashCodeExclude;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -13,7 +14,9 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "transfers")
 @Data
+@EqualsAndHashCode(of = {"id", "debitAccountCode", "creditAccountCode", "transferAmount"})
 @NoArgsConstructor
+@Builder
 @EntityListeners(AuditingEntityListener.class)
 @AllArgsConstructor
 public class Transfer {
@@ -34,6 +37,9 @@ public class Transfer {
 
     @Column(name = "transfer_amount", nullable = false)
     private BigDecimal transferAmount;
+
+    @Column(name = "transfer_status", nullable = true)
+    private String transferStatus;
 
     @Column(name = "creation_date", nullable = false)
     @CreatedDate

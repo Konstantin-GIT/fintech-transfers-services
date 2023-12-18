@@ -7,7 +7,8 @@ service AccountBalanceService {
 
 message MessageRequest {
     string codeAccount = 1;
-    string  amountOfBalanceChange = 2;
+    string amountOfBalanceChange = 2;
+    string transferId = 3;
 }
 
 message MessageResponse {
