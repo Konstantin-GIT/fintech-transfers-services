@@ -12,6 +12,8 @@ export class AccountComponent  implements OnInit {
 
   accounts: Account[] = [] ;
 
+ displayedColumns: string[] = [ 'code', 'balance', 'creationDate'];
+
 constructor(private accountService: AccountService) {}
 
 

@@ -2,3 +2,8 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.table-container {
+  width: 50%; /* или любое другое значение, которое вам нужно */
+  margin: 0 auto; /* чтобы центрировать таблицу по горизонтали */
+}

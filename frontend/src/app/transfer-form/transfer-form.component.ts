@@ -4,7 +4,7 @@ import { TransferService } from '../transfer/transfer.service';
 import { AccountService } from '../account/account.service';
 import { Account } from '../account/account.model';
 import {map, startWith} from 'rxjs/operators';
-import {Observable} from 'rxjs';
+import {Observable, of} from 'rxjs';
 
 
 @Component({
@@ -13,8 +13,8 @@ import {Observable} from 'rxjs';
 })
 export class TransferFormComponent implements OnInit  {
   createTransferForm: FormGroup;
-  debitControl = new FormControl('');
-  creditControl = new FormControl('');
+  debitControl = new FormControl('', Validators.required);
+  creditControl = new FormControl('', Validators.required);
 
   accountCodes: string[];
 
@@ -22,34 +22,61 @@ export class TransferFormComponent implements OnInit  {
   filteredCreditAccountCodes: Observable<string[]>;
 
   constructor(private fb: FormBuilder, private transferService: TransferService, private accountService: AccountService) {
-    this.createTransferForm = this.fb.group({
-      debitAccountCode: ['', Validators.required],
-      creditAccountCode: ['', Validators.required],
-      transferAmount: ['', Validators.required],
-
-    });
+this.createTransferForm = this.fb.group({
+  debitAccountCode: this.debitControl,
+  creditAccountCode: this.creditControl,
+  transferAmount: [
+    '',
+    Validators.required,
+    (control: FormControl): Observable<any> => {
+      const isValid = /^\d+$/.test(control.value);
+      return of(isValid ? null : { invalidNumber: true });
+    },
+  ],
+});
     this.accountCodes = [];
     this.filteredDebitAccountCodes = new Observable<string[]>();
     this.filteredCreditAccountCodes = new Observable<string[]>();
   }
 
-  ngOnInit() {
-    this.accountService.accounts.subscribe((accounts) => {
-      this.accountCodes = accounts.map(account => account.code);
+ngOnInit() {
+  this.accountService.accounts.subscribe((accounts) => {
+    this.accountCodes = accounts.map(account => account.code);
 
-      this.filteredDebitAccountCodes = this.debitControl.valueChanges.pipe(
-        startWith(''),
-        map(value => this._filter(value || '')),
-      );
+    this.filteredDebitAccountCodes = this.debitControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filter(value || '')),
+    );
 
-      this.filteredCreditAccountCodes = this.creditControl.valueChanges.pipe(
-        startWith(''),
-        map(value => this._filter(value || '')),
-      );
+    this.filteredCreditAccountCodes = this.creditControl.valueChanges.pipe(
+      startWith(''),
+      map(value => this._filter(value || '')),
+    );
 
+  });
 
+  this.debitControl.valueChanges.subscribe(() => {
+    if (this.debitControl.value === '') {
+      this.debitControl.setErrors(null);
+    }
+  });
+
+  this.creditControl.valueChanges.subscribe(() => {
+    if (this.creditControl.value === '') {
+      this.creditControl.setErrors(null);
+    }
+  });
+
+  const transferAmountControl = this.createTransferForm.get('transferAmount');
+  if (transferAmountControl) {
+    transferAmountControl.valueChanges.subscribe(() => {
+      if (transferAmountControl.value === '') {
+        transferAmountControl.setErrors(null);
+      }
     });
   }
+}
+
 
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();

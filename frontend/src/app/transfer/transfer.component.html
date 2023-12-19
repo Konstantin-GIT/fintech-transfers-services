@@ -1,23 +1,30 @@
 <h2>Transfers</h2>
 
-<table>
-  <thead>
-  <tr>
-    <th>ID</th>
-    <th>debitAccountCode</th>
-    <th>creditAccountCode</th>
-    <th>transferAmount</th>
-    <th>creationDate</th>
-  </tr>
-  </thead>
-  <tbody>
-  <tr *ngFor="let transfer of transfers">
-    <td>{{ transfer.id }}</td>
-    <td>{{ transfer.debitAccountCode }}</td>
-    <td>{{ transfer.creditAccountCode }}</td>
-    <td>{{ transfer.transferAmount }}</td>
-    <td>{{ transfer.creationDate }}</td>
-  </tr>
-  </tbody>
+<table mat-table [dataSource]="transfers" class="mat-elevation-z8">
+
+
+  <ng-container matColumnDef="debitAccountCode">
+    <th mat-header-cell *matHeaderCellDef> Debit Account Code </th>
+    <td mat-cell *matCellDef="let transfer"> {{ transfer.debitAccountCode }} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="creditAccountCode">
+    <th mat-header-cell *matHeaderCellDef> Credit Account Code </th>
+    <td mat-cell *matCellDef="let transfer"> {{ transfer.creditAccountCode }} </td>
+  </ng-container>
+
+  <ng-container matColumnDef="transferAmount">
+    <th mat-header-cell *matHeaderCellDef> Transfer Amount </th>
+    <td mat-cell *matCellDef="let transfer"> {{ transfer.transferAmount }} </td>
+  </ng-container>
+
+    <ng-container matColumnDef="creationDate">
+    <th mat-header-cell *matHeaderCellDef> Creation Date </th>
+    <td mat-cell *matCellDef="let transfer"> {{ transfer.creationDate }} </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 </table>
 

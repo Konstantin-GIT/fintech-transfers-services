@@ -2,40 +2,61 @@
 
 <form [formGroup]="createTransferForm" (ngSubmit)="onSubmit()">
 
-  <mat-form-field>
-    <mat-label>Debit account code</mat-label>
-    <input type="text"
-           placeholder="Pick one"
-           aria-label="Number"
-           matInput
-           [formControl]="debitControl"
-           [matAutocomplete]="debitAuto">
-    <mat-autocomplete autoActiveFirstOption #debitAuto="matAutocomplete">
-      @for (accountCode of filteredDebitAccountCodes | async; track accountCode) {
-      <mat-option [value]="accountCode">{{accountCode}}</mat-option>
-      }
-    </mat-autocomplete>
-  </mat-form-field>
+  <div class="form-field-group">
+    <mat-form-field>
+      <mat-label>debit account code</mat-label>
+      <input type="text"
+             placeholder="Pick one"
+             aria-label="Number"
+             matInput
+             [formControl]="debitControl"
+             [matAutocomplete]="debitAuto">
+      <mat-autocomplete autoActiveFirstOption #debitAuto="matAutocomplete">
+        @for (accountCode of filteredDebitAccountCodes | async; track accountCode) {
+        <mat-option [value]="accountCode">{{accountCode}}</mat-option>
+        }
+      </mat-autocomplete>
+    </mat-form-field>
+  </div>
 
-  <mat-form-field>
-    <mat-label>Credit account code</mat-label>
-    <input type="text"
-           placeholder="Pick one"
-           aria-label="Number"
-           matInput
-           [formControl]="creditControl"
-           [matAutocomplete]="creditAuto">
-    <mat-autocomplete autoActiveFirstOption #creditAuto="matAutocomplete">
-      @for (accountCode of filteredCreditAccountCodes | async; track accountCode) {
-      <mat-option [value]="accountCode">{{accountCode}}</mat-option>
-      }
-    </mat-autocomplete>
-  </mat-form-field>
+  <div class="form-field-group">
+    <mat-form-field>
+      <mat-label>credit account code</mat-label>
+      <input type="text"
+             placeholder="Pick one"
+             aria-label="Number"
+             matInput
+             [formControl]="creditControl"
+             [matAutocomplete]="creditAuto">
+      <mat-autocomplete autoActiveFirstOption #creditAuto="matAutocomplete">
+        @for (accountCode of filteredCreditAccountCodes | async; track accountCode) {
+        <mat-option [value]="accountCode">{{accountCode}}</mat-option>
+        }
+      </mat-autocomplete>
+      <mat-error *ngIf="creditControl.hasError('required') && !creditControl.hasError('matAutocomplete')">
+        Credit account code is required
+      </mat-error>
+      <mat-error *ngIf="creditControl.hasError('matAutocomplete')">
+        Invalid credit account code
+      </mat-error>
+    </mat-form-field>
+  </div>
 
-  <mat-form-field>
-    <mat-label >transferAmount</mat-label>
-    <input matInput formControlName="transferAmount">
-  </mat-form-field>
-  <button mat-raised-button color="primary" type="submit" [disabled]="createTransferForm.invalid">Create</button>
+  <div class="form-field-group">
+    <mat-form-field>
+      <mat-label>amount of transfer</mat-label>
+      <input matInput formControlName="transferAmount">
+      <mat-error *ngIf="createTransferForm.get('transferAmount')?.hasError('required')">
+        Transfer amount is required
+      </mat-error>
+      <mat-error *ngIf="createTransferForm.get('transferAmount')?.hasError('invalidNumber')">
+        Please enter a valid number.
+      </mat-error>
+    </mat-form-field>
+  </div>
+
+  <div class="form-field-group">
+    <button mat-raised-button color="primary" type="submit" [disabled]="createTransferForm.invalid">Create</button>
+  </div>
+
 </form>
-

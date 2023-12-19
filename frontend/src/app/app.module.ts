@@ -15,6 +15,7 @@ import {MatFormFieldModule} from '@angular/material/form-field';
 import {MatButtonModule} from '@angular/material/button';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import {AsyncPipe} from '@angular/common';
+import { MatTableModule } from '@angular/material/table';
 
 @NgModule({
   declarations: [
@@ -28,6 +29,7 @@ import {AsyncPipe} from '@angular/common';
   imports: [
     CommonModule,
     FormsModule,
+    MatTableModule,
     ReactiveFormsModule,
     BrowserModule,
     BrowserAnimationsModule,
