@@ -106,13 +106,35 @@ public class AccountControllerTest {
 
         AccountDto accountDto = new AccountDto();
         accountDto.setCode("code1");
-        accountDto.setAmountOfchange("1000.00");
+        accountDto.setBalance(new BigDecimal(1000));
 
         final Account createdAccount = accountService.createAccount(accountDto);
 
         final Account expected = accountRepository.findById(createdAccount.getId()).get();
 
         Assertions.assertThat(createdAccount).isEqualTo(expected);
+    }
+
+
+    // Тест требует рефакторинга после корректной реализации изменнения баланса
+    @Test
+    public void updateAccount() throws Exception {
+
+        AccountDto accountDto = new AccountDto();
+        accountDto.setCode("code_test");
+        accountDto.setBalance(new BigDecimal(1000.00));
+
+        final Account createdAccount = accountService.createAccount(accountDto);
+
+        Long accountIdForUpdate = createdAccount.getId();
+        AccountDto accountDtoForUpdate = new AccountDto();
+        accountDtoForUpdate.setBalance(new BigDecimal(2000.00));
+
+        final Account accountUpdated = accountService.updateAccount(accountDtoForUpdate, accountIdForUpdate );
+
+        final Account actualAccount = accountRepository.findById(accountIdForUpdate).get();
+
+        Assertions.assertThat(accountDtoForUpdate.getBalance()).isEqualTo(actualAccount.getBalance().toString());
     }
 
 

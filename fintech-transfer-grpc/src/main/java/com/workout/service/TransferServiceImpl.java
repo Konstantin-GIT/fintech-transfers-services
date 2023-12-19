@@ -19,14 +19,13 @@ public class TransferServiceImpl implements TransferService {
     private final TransferRepository transferRepository;
     @Override
     public void createPayment(String debitAccountCode, String creditAccountCode, String transferAmount, String transferId) {
+        String debitAmount = toDebitAmount(transferAmount);
+        String creditAmount = transferAmount;
 
-        String resultDebitAccount = accountBalanceClientGrpc.changeAccountBalance(debitAccountCode, transferAmount, transferId);
+        String resultDebitAccount = accountBalanceClientGrpc.changeAccountBalance(debitAccountCode, debitAmount, transferId);
 
-        String resultCreditAccount = accountBalanceClientGrpc.changeAccountBalance(creditAccountCode, transferAmount, transferId);
+        String resultCreditAccount = accountBalanceClientGrpc.changeAccountBalance(creditAccountCode, creditAmount, transferId);
 
-        System.out.println("resultDebitAccount = " + resultDebitAccount);
-
-        System.out.println("resultCreditAccount = " + resultCreditAccount);
     }
 
     public Transfer createTransfer(TransferDto transferDto, String transferStatus) {
@@ -43,6 +42,11 @@ public class TransferServiceImpl implements TransferService {
             .transferAmount(new BigDecimal(transferDto.getTransferAmount()))
             .build();
     }
+
+    private String toDebitAmount(String transferAmount) {
+        return "-" + transferAmount;
+    }
+
     @Override
     public List<Transfer> getTransfers() {
         return transferRepository.findAll();

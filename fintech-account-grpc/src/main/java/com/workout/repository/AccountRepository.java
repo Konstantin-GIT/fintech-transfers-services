@@ -7,10 +7,13 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Long>,
     CrudRepository<Account, Long>, QuerydslPredicateExecutor<Account> {
 
     List<Account> findAll();
+
+    Optional<Account> findByCode(String code);
 }

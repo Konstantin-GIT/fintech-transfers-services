@@ -11,7 +11,11 @@ import io.grpc.stub.StreamObserver;
 import org.lognet.springboot.grpc.GRpcService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.util.Optional;
+
+import static com.workout.grpc.Utils.containsOnlyDigitsAndNotEmpty;
 
 @GRpcService
 public class AccountBalanceServerGrpc extends AccountBalanceServiceGrpc.AccountBalanceServiceImplBase {
@@ -21,39 +25,59 @@ private AccountService accountService;
 
     @Override
     public void changeAccountBalance(AccountBalance.MessageRequest request, StreamObserver<AccountBalance.MessageResponse> responseObserver) {
-     /*    try {
-             String codeAccountStr = request.getCodeAccount();
-             BigDecimal codeAccount = new BigDecimal(codeAccountStr);
-         } catch (NumberFormatException e) {
-             System.err.println("Ошибка при конвертации строки в BigDecimal: " + e.getMessage());
-         }
-         */
-
 
         String code = request.getCodeAccount();
-        String balance = request.getAmountOfBalanceChange();
+        String amountOfBalanceChange = request.getAmountOfBalanceChange();
+        Optional<Account> accountUpdate = accountService.getAccountByCode(code);
+
+        if (accountUpdate.isEmpty()) {
+            responseObserver.onError(
+                Status.NOT_FOUND
+                    .withDescription("The account with code = " + code +" does not exist.")
+                    .asRuntimeException()
+            );
+            responseObserver.onCompleted();
+            return;
+        }
+
+        if (!containsOnlyDigitsAndNotEmpty(amountOfBalanceChange)) {
+            responseObserver.onError(
+                Status.INVALID_ARGUMENT
+                    .withDescription("For an account with code = " + code + ", the debit amount has an incorrect value.")
+                    .asRuntimeException()
+            );
+            responseObserver.onCompleted();
+            return;
+        }
+
+        BigDecimal balanceUpdate = accountUpdate.get().getBalance();
+        Long accountUpdateId =  accountUpdate.get().getId();
 
         AccountDto accountDto = new AccountDto();
         accountDto.setCode(code);
-        accountDto.setAmountOfchange(balance);
 
-        Account createdAccount = accountService.createAccount(accountDto);
+        BigDecimal updatedBalance = balanceUpdate.add(new BigDecimal(amountOfBalanceChange));
 
-
-        int codeAccount = Integer.parseInt(request.getCodeAccount());
-        if (100 > codeAccount) {
-            // Отправка ошибки, если код меньше 100
+        if (!(updatedBalance.compareTo(BigDecimal.ZERO) >= 0)) {
             responseObserver.onError(
-                Status.INVALID_ARGUMENT
-                    .withDescription("CodeAccount must be greater than or equal to 100")
+                Status.UNAVAILABLE
+                    .withDescription("There is not enough money in the account with the code = " + code + ".")
                     .asRuntimeException()
             );
-        } else {
+            responseObserver.onCompleted();
+            return;
+        }
+
+        accountDto.setBalance(updatedBalance);
+
+        Account updatedAccount = accountService.updateAccount(accountDto, accountUpdateId);
+
+
             responseObserver.onNext(
                 AccountBalance.MessageResponse.newBuilder()
-                    .setStatus("created account with id = " + createdAccount.getId()
-                                + " code = " + createdAccount.getCode()
-                                + " balance = " + createdAccount.getBalance())
+                    .setStatus("Updated account with id = " + updatedAccount.getId()
+                                + " code = " + updatedAccount.getCode()
+                                + " balance = " + updatedAccount.getBalance())
                     .build()
             );
             responseObserver.onCompleted();
@@ -61,6 +85,4 @@ private AccountService accountService;
 
     }
 
-
-    }
 
