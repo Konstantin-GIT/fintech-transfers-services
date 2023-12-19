@@ -41,6 +41,7 @@ databaseChangeLog:
       author: SU
       changes:
         - createTable:
+            tableName: transfers
             columns:
               - column:
                   autoIncrement: true
@@ -75,4 +76,3 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                   type: TIMESTAMP(6)
-            tableName: transfers

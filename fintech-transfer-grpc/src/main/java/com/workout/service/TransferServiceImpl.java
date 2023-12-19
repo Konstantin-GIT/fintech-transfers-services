@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
 
+import static com.workout.service.Utils.containsOnlyDigitsAndNotEmpty;
+
 @AllArgsConstructor
 @Service
 public class TransferServiceImpl implements TransferService {
@@ -19,14 +21,26 @@ public class TransferServiceImpl implements TransferService {
     private final TransferRepository transferRepository;
     @Override
     public void createPayment(String debitAccountCode, String creditAccountCode, String transferAmount, String transferId) {
+        if (!containsOnlyDigitsAndNotEmpty(transferAmount)) {
+            throw new RuntimeException("Not correct transferAmount ");
+        }
         String debitAmount = toDebitAmount(transferAmount);
         String creditAmount = transferAmount;
 
-        String resultDebitAccount = accountBalanceClientGrpc.changeAccountBalance(debitAccountCode, debitAmount, transferId);
-
-        String resultCreditAccount = accountBalanceClientGrpc.changeAccountBalance(creditAccountCode, creditAmount, transferId);
-
+        try {
+            String resultDebitAccount = accountBalanceClientGrpc.changeAccountBalance(debitAccountCode, debitAmount, transferId);
+        } catch (Exception e) {
+            throw new RuntimeException("First method failed");
+        }
+        try {
+            String resultCreditAccount = accountBalanceClientGrpc.changeAccountBalance(creditAccountCode, creditAmount, transferId);
+        } catch ( Exception e) {
+            accountBalanceClientGrpc.changeAccountBalance(debitAccountCode, transferAmount, transferId);
+            System.out.println("!!!!!!!!!!!!!! ROLLBACK  DEBIT CODE");
+        }
     }
+
+
 
     public Transfer createTransfer(TransferDto transferDto, String transferStatus) {
         var transfer = fromDto(transferDto);
@@ -44,6 +58,7 @@ public class TransferServiceImpl implements TransferService {
     }
 
     private String toDebitAmount(String transferAmount) {
+
         return "-" + transferAmount;
     }
 
