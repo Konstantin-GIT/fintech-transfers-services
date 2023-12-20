@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { NgFor } from '@angular/common';
 import { AccountService } from './account.service';
 import { Account } from './account.model';
+import { TransferService } from '../transfer/transfer.service';
 
 @Component({
   selector: 'app-account',
@@ -14,12 +15,16 @@ export class AccountComponent  implements OnInit {
 
  displayedColumns: string[] = [ 'code', 'balance', 'creationDate'];
 
-constructor(private accountService: AccountService) {}
+constructor(private accountService: AccountService, private transferService: TransferService) {}
 
 
-  ngOnInit(): void {
+ngOnInit(): void {
+  this.getAccounts();
+
+  this.transferService.accountUpdated$.subscribe(() => {
     this.getAccounts();
-  }
+  });
+}
     getAccounts(): void {
       this.accountService.getAccounts()
           .subscribe(accounts => this.accounts = accounts);
