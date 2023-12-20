@@ -60,7 +60,7 @@ private AccountService accountService;
 
         if (!(updatedBalance.compareTo(BigDecimal.ZERO) >= 0)) {
             responseObserver.onError(
-                Status.UNAVAILABLE
+                Status.RESOURCE_EXHAUSTED
                     .withDescription("There is not enough money in the account with the code = " + code + ".")
                     .asRuntimeException()
             );
@@ -73,14 +73,14 @@ private AccountService accountService;
         Account updatedAccount = accountService.updateAccount(accountDto, accountUpdateId);
 
 
-            responseObserver.onNext(
-                AccountBalance.MessageResponse.newBuilder()
-                    .setStatus("Updated account with id = " + updatedAccount.getId()
-                                + " code = " + updatedAccount.getCode()
-                                + " balance = " + updatedAccount.getBalance())
-                    .build()
-            );
-            responseObserver.onCompleted();
+        responseObserver.onNext(
+            AccountBalance.MessageResponse.newBuilder()
+                .setStatus(Status.OK.getCode().name())  // Используем строковое представление кода статуса
+                .setMessage("Updated account with code = " + updatedAccount.getCode()
+                    + " balance = " + updatedAccount.getBalance())
+                .build()
+        );
+        responseObserver.onCompleted();
         }
 
     }

@@ -153,6 +153,26 @@ public class AccountControllerTest {
         assertEquals("HELLO", response.getText());
 
     }
+/*
+    @Test
+    public void exceptionTest() {
+        final ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", port)
+            .usePlaintext()
+            .build();
+        final Echo.Message response = EchoServiceGrpc.newBlockingStub(channel)
+            .sayHello(Echo.Message.newBuilder()
+                .
+                .setText("Hello")
+                .build());
+        assertEquals("HELLO", response.getText());
+
+    }
+*/
+
+
+
+
+
 
     public static final ObjectMapper MAPPER = new ObjectMapper().findAndRegisterModules();
 
