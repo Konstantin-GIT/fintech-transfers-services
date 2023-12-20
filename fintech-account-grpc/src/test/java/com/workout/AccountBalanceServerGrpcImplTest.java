@@ -3,7 +3,7 @@ import com.workout.example.AccountBalance;
 import com.workout.example.AccountBalanceServiceGrpc;
 import com.workout.example.Echo;
 import com.workout.example.EchoServiceGrpc;
-import com.workout.grpc.AccountBalanceServerGrpc;
+import com.workout.grpc.AccountBalanceServerGrpcImpl;
 import com.workout.model.Account;
 import com.workout.repository.AccountRepository;
 import com.workout.service.AccountService;
@@ -36,10 +36,10 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@ContextConfiguration(initializers = {AccountBalanceServerGrpcTest.Initializer.class})
+@ContextConfiguration(initializers = {AccountBalanceServerGrpcImplTest.Initializer.class})
 //@TestPropertySource(locations = "classpath:test-application.yml")
 @Testcontainers
-public class AccountBalanceServerGrpcTest {
+public class AccountBalanceServerGrpcImplTest {
     private static final int PORT = 6566;
     private static ManagedChannel channel;
 

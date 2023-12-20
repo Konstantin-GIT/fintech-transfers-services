@@ -1,4 +1,4 @@
-package com.workout;
+package com.workout.exception;
 
 import com.workout.exception.AccountNotFoundException;
 import org.springframework.web.bind.annotation.ControllerAdvice;

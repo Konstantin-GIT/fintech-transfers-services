@@ -1,5 +1,6 @@
 package com.workout.dto;
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -16,6 +17,6 @@ public class AccountDto {
     private String code;
 
     @NotBlank
-    @Size(min = 1)
+    @Column(name = "balance", nullable = false, columnDefinition = "NUMERIC(19, 2) DEFAULT 0.00")
     private BigDecimal balance;
 }

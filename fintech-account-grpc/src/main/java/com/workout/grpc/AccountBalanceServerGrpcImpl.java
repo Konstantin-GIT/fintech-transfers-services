@@ -6,7 +6,6 @@ import com.workout.dto.AccountDto;
 import com.workout.example.AccountBalance;
 import com.workout.example.AccountBalanceServiceGrpc;
 import com.workout.model.Account;
-import com.workout.repository.AccountRepository;
 import com.workout.service.AccountService;
 import io.grpc.Status;
 import io.grpc.stub.StreamObserver;
@@ -14,16 +13,16 @@ import org.lognet.springboot.grpc.GRpcService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.math.BigDecimal;
-import java.sql.SQLException;
 import java.util.Optional;
 
 import static com.workout.grpc.Utils.containsOnlyDigitsAndNotEmpty;
 
 @GRpcService
-public class AccountBalanceServerGrpc extends AccountBalanceServiceGrpc.AccountBalanceServiceImplBase {
+public class AccountBalanceServerGrpcImpl extends AccountBalanceServiceGrpc.AccountBalanceServiceImplBase
+                                        implements AccountBalanceServer {
 
-@Autowired
-private AccountService accountService;
+    @Autowired
+    private AccountService accountService;
 
     @Override
     public void changeAccountBalance(AccountBalance.MessageRequest request, StreamObserver<AccountBalance.MessageResponse> responseObserver) {
@@ -67,6 +66,6 @@ private AccountService accountService;
     }
 
 
-    }
+}
 
 

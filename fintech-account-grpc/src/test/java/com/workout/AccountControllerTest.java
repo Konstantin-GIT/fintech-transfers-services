@@ -106,7 +106,7 @@ public class AccountControllerTest {
 
         AccountDto accountDto = new AccountDto();
         accountDto.setCode("code1");
-        accountDto.setBalance(new BigDecimal(1000));
+        accountDto.setBalance(new BigDecimal("1000.00"));
 
         final Account createdAccount = accountService.createAccount(accountDto);
 
@@ -122,13 +122,13 @@ public class AccountControllerTest {
 
         AccountDto accountDto = new AccountDto();
         accountDto.setCode("code_test");
-        accountDto.setBalance(new BigDecimal(1000.00));
+        accountDto.setBalance(new BigDecimal("1000.00"));
 
         final Account createdAccount = accountService.createAccount(accountDto);
 
         Long accountIdForUpdate = createdAccount.getId();
         AccountDto accountDtoForUpdate = new AccountDto();
-        accountDtoForUpdate.setBalance(new BigDecimal(2000.00));
+        accountDtoForUpdate.setBalance(new BigDecimal("2000.00"));
 
         final Account accountUpdated = accountService.updateAccount(accountDtoForUpdate, accountIdForUpdate );
 
@@ -136,42 +136,6 @@ public class AccountControllerTest {
 
         Assertions.assertThat(accountDtoForUpdate.getBalance()).isEqualTo(actualAccount.getBalance().toString());
     }
-
-
-    @LocalRunningGrpcPort
-    int port;
-
-    @Test
-    void echoTest() {
-        final ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", port)
-            .usePlaintext()
-            .build();
-        final Echo.Message response = EchoServiceGrpc.newBlockingStub(channel)
-            .sayHello(Echo.Message.newBuilder()
-                .setText("Hello")
-                .build());
-        assertEquals("HELLO", response.getText());
-
-    }
-/*
-    @Test
-    public void exceptionTest() {
-        final ManagedChannel channel = ManagedChannelBuilder.forAddress("localhost", port)
-            .usePlaintext()
-            .build();
-        final Echo.Message response = EchoServiceGrpc.newBlockingStub(channel)
-            .sayHello(Echo.Message.newBuilder()
-                .
-                .setText("Hello")
-                .build());
-        assertEquals("HELLO", response.getText());
-
-    }
-*/
-
-
-
-
 
 
     public static final ObjectMapper MAPPER = new ObjectMapper().findAndRegisterModules();
