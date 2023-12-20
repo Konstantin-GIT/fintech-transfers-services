@@ -1,5 +1,6 @@
 package com.workout.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "transfers")
 @Data
-@EqualsAndHashCode(of = {"id", "debitAccountCode", "creditAccountCode", "transferAmount"})
+@EqualsAndHashCode(of = {"debitAccountCode", "creditAccountCode", "transferAmount"})
 @NoArgsConstructor
 @Builder
 @EntityListeners(AuditingEntityListener.class)
@@ -43,6 +44,7 @@ public class Transfer {
 
     @Column(name = "creation_date", nullable = false)
     @CreatedDate
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime creationDate;
 
 }

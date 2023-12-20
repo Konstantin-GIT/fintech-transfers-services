@@ -1,14 +1,17 @@
 package com.workout.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 
-@Getter
-@Setter
+import java.time.LocalDateTime;
+
+@Data
+@Builder
+@EqualsAndHashCode(of = {"id", "debitAccountCode", "creditAccountCode", "transferAmount"})
 @NoArgsConstructor
 @AllArgsConstructor
 public class TransferDto {
@@ -25,6 +28,7 @@ public class TransferDto {
     @Size(min = 1)
     private String transferAmount;
 
-
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime creationDate;
 
 }

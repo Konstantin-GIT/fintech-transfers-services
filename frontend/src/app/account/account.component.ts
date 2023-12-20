@@ -13,7 +13,7 @@ export class AccountComponent  implements OnInit {
 
   accounts: Account[] = [] ;
 
- displayedColumns: string[] = [ 'code', 'balance', 'creationDate'];
+ displayedColumns: string[] = [ 'code', 'balance'];
 
 constructor(private accountService: AccountService, private transferService: TransferService) {}
 

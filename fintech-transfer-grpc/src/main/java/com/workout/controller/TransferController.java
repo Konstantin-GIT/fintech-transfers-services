@@ -1,15 +1,14 @@
 package com.workout.controller;
 
 import com.workout.dto.TransferDto;
-import com.workout.exception.TransactionFailedException;
-import com.workout.model.Transfer;
+import com.workout.exception.TransferFailedException;
 import com.workout.service.TransferService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import static com.workout.controller.TransferController.TRANSFER_CONTROLLER_PATH;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
-import com.workout.exception.TransactionFailedException;
+
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +25,6 @@ public class TransferController {
     @Qualifier("TransferServiceImpl")
     private final TransferService transferService;
 
-
     @GetMapping("/welcome")
     @ResponseStatus(OK)
     public String getGreeting() {
@@ -35,8 +33,7 @@ public class TransferController {
 
     @GetMapping
     @ResponseStatus(OK)
-    public List<Transfer> index() {
-         System.out.println("transferService.getTransfers() = " + transferService.getTransfers());
+    public List<TransferDto> index() {
         return transferService.getTransfers();
     }
 
@@ -44,21 +41,11 @@ public class TransferController {
     @ResponseStatus(CREATED)
     public void createPayment(@RequestBody @Valid TransferDto transferDto) throws RuntimeException {
         try {
-            System.out.println("createPayment() transferDto = " + transferDto);
-
-            Transfer createdTransfer = transferService.createTransfer(transferDto, "started");
-            System.out.println("createPayment() -> createdTransfer = " + createdTransfer);
-
-            String message = transferService.createPayment(transferDto.getDebitAccountCode(),
-                transferDto.getCreditAccountCode(),
-                transferDto.getTransferAmount(),
-                createdTransfer.getId().toString()
-            );
-            System.out.println(message);
+                transferService.createPayment(transferDto);
 
         } catch (RuntimeException e) {
-            System.out.println(e);
-            throw new TransactionFailedException("An error occurred while executing the transaction, please try again." + e.getMessage());
+
+            throw new TransferFailedException("An error occurred while executing the transaction, please try again." + e.getMessage());
         }
     }
 

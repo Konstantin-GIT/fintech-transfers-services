@@ -7,6 +7,7 @@ import com.workout.service.TransferService;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -41,7 +42,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Testcontainers
 public class TransferControllerTest {
 
-
     @Autowired
     private MockMvc mockMvc;
 
@@ -50,6 +50,11 @@ public class TransferControllerTest {
 
     @Autowired
     private TransferService transferService;
+
+    @BeforeEach
+    public void setUp() {
+        transferRepository.deleteAll();
+    }
 
     @Container
     public static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest")
@@ -78,24 +83,24 @@ public class TransferControllerTest {
 
     @Test
     public void testIndex() throws Exception {
-
         Transfer transfer = new Transfer();
         transfer.setCreditAccountCode("code1");
         transfer.setDebitAccountCode("code2");
-        transfer.setTransferStatus("started");
-        transfer.setTransferAmount(BigDecimal.valueOf(10));
-        transferRepository.save(transfer);
+        transfer.setTransferAmount(new BigDecimal("10.00"));
+        Transfer savedTransfer = transferRepository.save(transfer);
+
 
         var response = mockMvc.perform(get("/api/transfers"))
             .andExpect(status().isOk())
             .andReturn()
             .getResponse();
 
-        final List<Transfer> transfers = fromJson(response.getContentAsString(), new TypeReference<>() { });
-        final List<Transfer> expected = transferRepository.findAll();
+        final List<TransferDto> transfers = fromJson(response.getContentAsString(), new TypeReference<>() {
+        });
+        final List<TransferDto> expected = List.of(toDto(savedTransfer));
 
-        Assertions.assertThat(transfers).containsAll(expected);
-
+        // Проверяем, что списки равны с учетом порядка элементов
+        assertThat(transfers).containsExactlyInAnyOrderElementsOf(expected);
     }
 
     @Test
@@ -105,23 +110,23 @@ public class TransferControllerTest {
         transferDto.setCreditAccountCode("code1");
         transferDto.setDebitAccountCode("code2");
         transferDto.setTransferAmount("9999.00");
+        transferDto.setTransferAmount("9999.00");
 
+        final Transfer createdTransfer = transferService.createTransfer(transferDto);
 
-     /*   var response = mockMvc.perform(get("/api/transfers")
-            .content(MAPPER.writeValueAsString(transferDto))
-            .contentType(APPLICATION_JSON))
-            .andExpect(status().isCreated())
-            .andReturn()
-            .getResponse();
-*/
-        final Transfer createdTransfer = transferService.createTransfer(transferDto, "started");
-
-     /*   final Transfer createdTransfer = fromJson(response.getContentAsString(), new TypeReference<>() { });*/
         final Transfer expected = transferRepository.findById(createdTransfer.getId()).get();
 
         Assertions.assertThat(createdTransfer).isEqualTo(expected);
     }
 
+    private TransferDto toDto(Transfer transfer) {
+        return TransferDto.builder()
+            .debitAccountCode(transfer.getDebitAccountCode())
+            .creditAccountCode(transfer.getCreditAccountCode())
+            .transferAmount(transfer.getTransferAmount().toString())
+            .creationDate(transfer.getCreationDate())
+            .build();
+    }
     public static final ObjectMapper MAPPER = new ObjectMapper().findAndRegisterModules();
 
     public static String asJson(final Object object) throws JsonProcessingException {

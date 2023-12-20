@@ -4,13 +4,15 @@ import com.workout.dto.TransferDto;
 import com.workout.grpc.AccountBalanceClientGrpc;
 import com.workout.model.Transfer;
 import com.workout.repository.TransferRepository;
-import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import com.workout.exception.TransactionFailedException;
+import com.workout.exception.TransferFailedException;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.workout.service.Utils.containsOnlyDigitsAndNotEmpty;
 
@@ -21,10 +23,18 @@ public class TransferServiceImpl implements TransferService {
     private final AccountBalanceClientGrpc accountBalanceClientGrpc;
 
     private final TransferRepository transferRepository;
+
     @Override
-    public String createPayment(String debitAccountCode, String creditAccountCode, String transferAmount, String transferId) {
+    public Transfer createPayment(TransferDto transferDto)
+    {
+
+        String transferAmount = transferDto.getTransferAmount();
+        String debitAccountCode = transferDto.getDebitAccountCode();
+        String creditAccountCode = transferDto.getCreditAccountCode();
+        String transferId = "transferId";
+
         if (!containsOnlyDigitsAndNotEmpty(transferAmount)) {
-            throw new TransactionFailedException("An incorrect transfer amount was entered");
+            throw new TransferFailedException("An incorrect transferId transfer amount was entered");
         }
 
         String debitAmount = toDebitAmount(transferAmount);
@@ -38,16 +48,15 @@ public class TransferServiceImpl implements TransferService {
 
             } catch (StatusRuntimeException e) {
                 rollbackDebitOperation(debitAccountCode, transferAmount, transferId);
-                System.out.println("--> Rollback for debit code");
-                throw new TransactionFailedException(e.getMessage());
+                throw new TransferFailedException(e.getMessage());
             }
 
         } catch (StatusRuntimeException e) {
-            throw new TransactionFailedException(e.getMessage());
+            throw new TransferFailedException(e.getMessage());
 
         }
 
-        return "transfer created";
+        return  createTransfer(transferDto);
 
 
     }
@@ -56,14 +65,13 @@ public class TransferServiceImpl implements TransferService {
         try {
             accountBalanceClientGrpc.changeAccountBalance(debitAccountCode, transferAmount, transferId);
         } catch (StatusRuntimeException ex) {
-            throw new TransactionFailedException("Rollback failed:" + ex.getMessage());
+            throw new TransferFailedException("Rollback failed:" + ex.getMessage());
         }
     }
 
 
-    public Transfer createTransfer(TransferDto transferDto, String transferStatus) {
+    public Transfer createTransfer(TransferDto transferDto) {
         var transfer = fromDto(transferDto);
-        transfer.setTransferStatus(transferStatus);
         return transferRepository.save(transfer);
 
     }
@@ -76,13 +84,27 @@ public class TransferServiceImpl implements TransferService {
             .build();
     }
 
+    private TransferDto toDto(Transfer transfer) {
+        return TransferDto.builder()
+            .debitAccountCode(transfer.getDebitAccountCode())
+            .creditAccountCode(transfer.getCreditAccountCode())
+            .transferAmount(transfer.getTransferAmount().toString())
+            .creationDate(transfer.getCreationDate())
+            .build();
+    }
+
+
     private String toDebitAmount(String transferAmount) {
 
         return "-" + transferAmount;
     }
 
     @Override
-    public List<Transfer> getTransfers() {
-        return transferRepository.findAll();
+    public List<TransferDto> getTransfers() {
+        List<Transfer> transfers = transferRepository.findAll();
+
+        return transfers.stream().filter(Objects::nonNull).map(t -> toDto(t))
+            .collect(Collectors.toList());
+
     }
 }

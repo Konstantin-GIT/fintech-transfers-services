@@ -12,8 +12,8 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class BaseExceptionHandler {
 
     @ResponseStatus(NOT_FOUND)
-    @ExceptionHandler(TransactionFailedException.class)
-    public String accountNotFoundException(TransactionFailedException exception) {
+    @ExceptionHandler(TransferFailedException.class)
+    public String accountNotFoundException(TransferFailedException exception) {
         return exception.getMessage();
     }
 
