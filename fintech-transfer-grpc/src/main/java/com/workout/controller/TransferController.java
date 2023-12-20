@@ -1,6 +1,7 @@
 package com.workout.controller;
 
 import com.workout.dto.TransferDto;
+import com.workout.exception.TransactionFailedException;
 import com.workout.model.Transfer;
 import com.workout.service.TransferService;
 import jakarta.validation.Valid;
@@ -35,26 +36,30 @@ public class TransferController {
     @GetMapping
     @ResponseStatus(OK)
     public List<Transfer> index() {
-         System.out.println("TEST !!!!!!!!!!!!!!!!!!!!!!!!!!" + transferService.getTransfers());
+         System.out.println("transferService.getTransfers() = " + transferService.getTransfers());
         return transferService.getTransfers();
     }
 
     @PostMapping
     @ResponseStatus(CREATED)
-    public String createPayment(@RequestBody @Valid TransferDto transferDto) {
-        System.out.println("!!!!!!!!createPayment() transferDto = " + transferDto);
+    public void createPayment(@RequestBody @Valid TransferDto transferDto) {
 
-        Transfer createdTransfer = transferService.createTransfer(transferDto, "started");
-        System.out.println("!!!!!!createPayment() -> createdTransfer = " + createdTransfer);
+        try {
+            System.out.println("createPayment() transferDto = " + transferDto);
 
-        transferService.createPayment(transferDto.getDebitAccountCode(),
-                                        transferDto.getCreditAccountCode(),
-                                        transferDto.getTransferAmount(),
-                                        createdTransfer.getId().toString()
-        );
+            Transfer createdTransfer = transferService.createTransfer(transferDto, "started");
+            System.out.println("createPayment() -> createdTransfer = " + createdTransfer);
 
-        return "complied method createPayment";
+            String message = transferService.createPayment(transferDto.getDebitAccountCode(),
+                transferDto.getCreditAccountCode(),
+                transferDto.getTransferAmount(),
+                createdTransfer.getId().toString()
+            );
+            System.out.println(message);
+        } catch ( RuntimeException e) {
+            System.out.println(e);
+            throw new TransactionFailedException("An error occurred while executing the transaction, please try again.");
+        }
     }
-
 
 }

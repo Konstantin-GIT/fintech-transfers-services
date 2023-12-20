@@ -4,6 +4,8 @@ import com.workout.dto.TransferDto;
 import com.workout.grpc.AccountBalanceClientGrpc;
 import com.workout.model.Transfer;
 import com.workout.repository.TransferRepository;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,26 +22,41 @@ public class TransferServiceImpl implements TransferService {
 
     private final TransferRepository transferRepository;
     @Override
-    public void createPayment(String debitAccountCode, String creditAccountCode, String transferAmount, String transferId) {
+    public String createPayment(String debitAccountCode, String creditAccountCode, String transferAmount, String transferId) {
         if (!containsOnlyDigitsAndNotEmpty(transferAmount)) {
-            throw new RuntimeException("Not correct transferAmount ");
+            return "Not correct transfer amount";
         }
+
         String debitAmount = toDebitAmount(transferAmount);
         String creditAmount = transferAmount;
 
         try {
-            String resultDebitAccount = accountBalanceClientGrpc.changeAccountBalance(debitAccountCode, debitAmount, transferId);
-        } catch (Exception e) {
-            throw new RuntimeException("First method failed");
+            accountBalanceClientGrpc.changeAccountBalance(debitAccountCode, debitAmount, transferId);
+
+            try {
+                accountBalanceClientGrpc.changeAccountBalance(creditAccountCode, creditAmount, transferId);
+
+            } catch (StatusRuntimeException e) {
+                rollbackDebitOperation(debitAccountCode, transferAmount, transferId);
+                System.out.println("--> Rollback for debit code");
+                return "Credit operation failed" + e;
+            }
+
+        } catch (StatusRuntimeException e) {
+            return "Debit operation failed" + e;
         }
-        try {
-            String resultCreditAccount = accountBalanceClientGrpc.changeAccountBalance(creditAccountCode, creditAmount, transferId);
-        } catch ( Exception e) {
-            accountBalanceClientGrpc.changeAccountBalance(debitAccountCode, transferAmount, transferId);
-            System.out.println("!!!!!!!!!!!!!! ROLLBACK  DEBIT CODE");
-        }
+
+        return "transfer created";
+
+
     }
 
+    private void rollbackDebitOperation(String debitAccountCode, String transferAmount, String transferId) {
+        try {
+            accountBalanceClientGrpc.changeAccountBalance(debitAccountCode, transferAmount, transferId);
+        } catch (StatusRuntimeException ex) {
+        }
+    }
 
 
     public Transfer createTransfer(TransferDto transferDto, String transferStatus) {

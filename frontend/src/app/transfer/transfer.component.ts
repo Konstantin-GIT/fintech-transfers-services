@@ -20,10 +20,13 @@ constructor(private transferService: TransferService) {}
 
   ngOnInit(): void {
     this.getTransfers();
-  }
-    getTransfers(): void {
-      this.transferService.getTransfers()
-          .subscribe(transfers => this.transfers = transfers);
-    }
-}
 
+    this.transferService.transferCreated$.subscribe(() => {
+      this.getTransfers(); // Обновляем таблицу трансферов
+    });
+  }
+getTransfers(): void {
+  this.transferService.getTransfers()
+    .subscribe(transfers => this.transfers = transfers);
+}
+}

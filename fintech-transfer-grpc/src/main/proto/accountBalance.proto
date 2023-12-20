@@ -13,4 +13,5 @@ message MessageRequest {
 
 message MessageResponse {
     string status = 1;
+    string message = 2;
 }

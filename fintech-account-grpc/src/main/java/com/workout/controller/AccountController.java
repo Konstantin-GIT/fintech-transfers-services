@@ -27,7 +27,7 @@ public class AccountController {
     @ResponseStatus(OK)
     public List<Account> index() {
         //  return "null";
-        System.out.println("TEST !!!!!!!!!!!!!!!!!!!!!!!!!!" + accountRepository.findAll());
+        System.out.println("accountRepository.findAll() = " + accountRepository.findAll());
 
         return accountRepository.findAll();
     }

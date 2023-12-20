@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 //import { Observable } from 'rxjs';
 import { Transfer } from './transfer.model';
 import {TRANSFERS} from './mock-transfers';
@@ -12,7 +12,8 @@ import { catchError, map, tap } from 'rxjs/operators';
 })
 export class TransferService {
   private apiUrl = 'http://localhost:5007/api/transfers';
-
+  private transferCreatedSource = new Subject<void>();
+ private accountUpdatedSource = new Subject<void>();
 
   httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' ,
@@ -20,6 +21,8 @@ export class TransferService {
         })
   };
 
+  transferCreated$ = this.transferCreatedSource.asObservable();
+  accountUpdated$ = this.accountUpdatedSource.asObservable();
 
   constructor(private http: HttpClient) {}
 
@@ -27,8 +30,21 @@ export class TransferService {
     return this.http.get<Transfer[]>(this.apiUrl, this.httpOptions);
   }
 
-    createTransfer(data: any): Observable<any> {
-      return this.http.post(this.apiUrl, data, this.httpOptions);
-    }
+  createTransfer(data: any): Observable<any> {
+    return this.http.post(this.apiUrl, data, { ...this.httpOptions, observe: 'response' }).pipe(
+      tap(
+        (response: HttpResponse<any>) => {
+          if (response.status === 201) {
+            this.transferCreatedSource.next();
+            this.accountUpdatedSource.next();
+          }
+        },
+        (error) => {
+          console.error('Error during transfer creation:', error);
+        }
+      )
+    );
+  }
+
 }
 

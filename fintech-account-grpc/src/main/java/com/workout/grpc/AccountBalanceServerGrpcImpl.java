@@ -18,8 +18,9 @@ import java.util.Optional;
 import static com.workout.grpc.Utils.containsOnlyDigitsAndNotEmpty;
 
 @GRpcService
-public class AccountBalanceServerGrpcImpl extends AccountBalanceServiceGrpc.AccountBalanceServiceImplBase
-                                        implements AccountBalanceServer {
+public class AccountBalanceServerGrpcImpl
+                    extends AccountBalanceServiceGrpc.AccountBalanceServiceImplBase
+                    implements AccountBalanceServer {
 
     @Autowired
     private AccountService accountService;
