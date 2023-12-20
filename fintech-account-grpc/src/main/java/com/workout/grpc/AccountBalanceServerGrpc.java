@@ -1,5 +1,7 @@
 package com.workout.grpc;
 
+import static com.workout.exception.ErrorHandler.handleError;
+
 import com.workout.dto.AccountDto;
 import com.workout.example.AccountBalance;
 import com.workout.example.AccountBalanceServiceGrpc;
@@ -25,63 +27,45 @@ private AccountService accountService;
 
     @Override
     public void changeAccountBalance(AccountBalance.MessageRequest request, StreamObserver<AccountBalance.MessageResponse> responseObserver) {
-
         String code = request.getCodeAccount();
         String amountOfBalanceChange = request.getAmountOfBalanceChange();
         Optional<Account> accountUpdate = accountService.getAccountByCode(code);
 
         if (accountUpdate.isEmpty()) {
-            responseObserver.onError(
-                Status.NOT_FOUND
-                    .withDescription("The account with code = " + code +" does not exist.")
-                    .asRuntimeException()
-            );
-            responseObserver.onCompleted();
+            handleError(responseObserver, Status.NOT_FOUND, "The account with code = " + code + " does not exist.");
             return;
         }
 
         if (!containsOnlyDigitsAndNotEmpty(amountOfBalanceChange)) {
-            responseObserver.onError(
-                Status.INVALID_ARGUMENT
-                    .withDescription("For an account with code = " + code + ", the debit amount has an incorrect value.")
-                    .asRuntimeException()
-            );
-            responseObserver.onCompleted();
+            handleError(responseObserver, Status.INVALID_ARGUMENT, "For an account with code = " + code + ", the debit amount has an incorrect value.");
             return;
         }
 
         BigDecimal balanceUpdate = accountUpdate.get().getBalance();
-        Long accountUpdateId =  accountUpdate.get().getId();
-
-        AccountDto accountDto = new AccountDto();
-        accountDto.setCode(code);
+        Long accountUpdateId = accountUpdate.get().getId();
 
         BigDecimal updatedBalance = balanceUpdate.add(new BigDecimal(amountOfBalanceChange));
 
         if (!(updatedBalance.compareTo(BigDecimal.ZERO) >= 0)) {
-            responseObserver.onError(
-                Status.RESOURCE_EXHAUSTED
-                    .withDescription("There is not enough money in the account with the code = " + code + ".")
-                    .asRuntimeException()
-            );
-            responseObserver.onCompleted();
+            handleError(responseObserver, Status.RESOURCE_EXHAUSTED, "There is not enough money in the account with the code = " + code + ".");
             return;
         }
 
+        AccountDto accountDto = new AccountDto();
+        accountDto.setCode(code);
         accountDto.setBalance(updatedBalance);
 
         Account updatedAccount = accountService.updateAccount(accountDto, accountUpdateId);
 
-
         responseObserver.onNext(
             AccountBalance.MessageResponse.newBuilder()
-                .setStatus(Status.OK.getCode().name())  // Используем строковое представление кода статуса
-                .setMessage("Updated account with code = " + updatedAccount.getCode()
-                    + " balance = " + updatedAccount.getBalance())
+                .setStatus(Status.OK.getCode().name())
+                .setMessage("Updated account with code = " + updatedAccount.getCode() + " balance = " + updatedAccount.getBalance())
                 .build()
         );
         responseObserver.onCompleted();
-        }
+    }
+
 
     }
 
