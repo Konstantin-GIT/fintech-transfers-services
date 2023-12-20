@@ -5,6 +5,7 @@ import { AccountService } from '../account/account.service';
 import { Account } from '../account/account.model';
 import {map, startWith} from 'rxjs/operators';
 import {Observable, of} from 'rxjs';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 
 @Component({
@@ -21,7 +22,8 @@ export class TransferFormComponent implements OnInit  {
   filteredDebitAccountCodes: Observable<string[]>;
   filteredCreditAccountCodes: Observable<string[]>;
 
-  constructor(private fb: FormBuilder, private transferService: TransferService, private accountService: AccountService) {
+  constructor(private fb: FormBuilder, private transferService: TransferService,
+   private accountService: AccountService,  private snackBar: MatSnackBar ) {
 this.createTransferForm = this.fb.group({
   debitAccountCode: this.debitControl,
   creditAccountCode: this.creditControl,
@@ -94,6 +96,8 @@ ngOnInit() {
         },
         (error) => {
           console.error('Error:', error);
+           this.snackBar.open('Ошибка при создании перевода: ' + error.message, 'Закрыть', { duration: 5000 });
+
         }
       );
     }

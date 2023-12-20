@@ -8,7 +8,7 @@ import io.grpc.Status;
 import io.grpc.StatusRuntimeException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-
+import com.workout.exception.TransactionFailedException;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -24,7 +24,7 @@ public class TransferServiceImpl implements TransferService {
     @Override
     public String createPayment(String debitAccountCode, String creditAccountCode, String transferAmount, String transferId) {
         if (!containsOnlyDigitsAndNotEmpty(transferAmount)) {
-            return "Not correct transfer amount";
+            throw new TransactionFailedException("An incorrect transfer amount was entered");
         }
 
         String debitAmount = toDebitAmount(transferAmount);
@@ -39,11 +39,12 @@ public class TransferServiceImpl implements TransferService {
             } catch (StatusRuntimeException e) {
                 rollbackDebitOperation(debitAccountCode, transferAmount, transferId);
                 System.out.println("--> Rollback for debit code");
-                return "Credit operation failed" + e;
+                throw new TransactionFailedException(e.getMessage());
             }
 
         } catch (StatusRuntimeException e) {
-            return "Debit operation failed" + e;
+            throw new TransactionFailedException(e.getMessage());
+
         }
 
         return "transfer created";
@@ -55,6 +56,7 @@ public class TransferServiceImpl implements TransferService {
         try {
             accountBalanceClientGrpc.changeAccountBalance(debitAccountCode, transferAmount, transferId);
         } catch (StatusRuntimeException ex) {
+            throw new TransactionFailedException("Rollback failed:" + ex.getMessage());
         }
     }
 

@@ -9,7 +9,7 @@ import lombok.AllArgsConstructor;
 import static com.workout.controller.TransferController.TRANSFER_CONTROLLER_PATH;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
-
+import com.workout.exception.TransactionFailedException;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,8 +42,7 @@ public class TransferController {
 
     @PostMapping
     @ResponseStatus(CREATED)
-    public void createPayment(@RequestBody @Valid TransferDto transferDto) {
-
+    public void createPayment(@RequestBody @Valid TransferDto transferDto) throws RuntimeException {
         try {
             System.out.println("createPayment() transferDto = " + transferDto);
 
@@ -56,9 +55,10 @@ public class TransferController {
                 createdTransfer.getId().toString()
             );
             System.out.println(message);
-        } catch ( RuntimeException e) {
+
+        } catch (RuntimeException e) {
             System.out.println(e);
-            throw new TransactionFailedException("An error occurred while executing the transaction, please try again.");
+            throw new TransactionFailedException("An error occurred while executing the transaction, please try again." + e.getMessage());
         }
     }
 

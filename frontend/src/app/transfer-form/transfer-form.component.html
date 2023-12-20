@@ -59,4 +59,9 @@
     <button mat-raised-button color="primary" type="submit" [disabled]="createTransferForm.invalid">Create</button>
   </div>
 
+  <!-- Вывод ошибок -->
+  <div *ngIf="createTransferForm.errors" class="error-message">
+    {{ createTransferForm.errors | json }}
+  </div>
+
 </form>

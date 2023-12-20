@@ -22,7 +22,7 @@ constructor(private transferService: TransferService) {}
     this.getTransfers();
 
     this.transferService.transferCreated$.subscribe(() => {
-      this.getTransfers(); // Обновляем таблицу трансферов
+      this.getTransfers();
     });
   }
 getTransfers(): void {
