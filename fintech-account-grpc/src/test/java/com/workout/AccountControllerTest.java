@@ -9,11 +9,14 @@ import com.workout.service.AccountService;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import org.junit.runner.RunWith;
 import org.lognet.springboot.grpc.context.LocalRunningGrpcPort;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -22,6 +25,7 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -40,10 +44,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ContextConfiguration(initializers = {AccountControllerTest.Initializer.class})
 @Testcontainers
 public class AccountControllerTest {
-
     @Autowired
     private MockMvc mockMvc;
-
     @Autowired
     private AccountRepository accountRepository;
 
@@ -115,8 +117,6 @@ public class AccountControllerTest {
         Assertions.assertThat(createdAccount).isEqualTo(expected);
     }
 
-
-    // Тест требует рефакторинга после корректной реализации изменнения баланса
     @Test
     public void updateAccount() throws Exception {
 

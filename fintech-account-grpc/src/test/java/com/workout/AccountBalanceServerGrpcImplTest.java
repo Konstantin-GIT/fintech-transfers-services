@@ -30,12 +30,13 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.math.BigDecimal;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
-@AutoConfigureMockMvc
+
 @ContextConfiguration(initializers = {AccountBalanceServerGrpcImplTest.Initializer.class})
 //@TestPropertySource(locations = "classpath:test-application.yml")
 @Testcontainers
@@ -59,8 +60,16 @@ public class AccountBalanceServerGrpcImplTest {
     private AccountRepository accountRepository;
     @AfterAll
     static void tearDown() {
-        // Закрываем канал gRPC после завершения тестов
         channel.shutdownNow();
+
+        try {
+            if (!channel.awaitTermination(5, TimeUnit.SECONDS)) {
+                System.err.println("gRPC server did not terminate in time.");
+            }
+        } catch (InterruptedException e) {
+            System.err.println("Interrupted while waiting for gRPC server to terminate.");
+            Thread.currentThread().interrupt();
+        }
     }
 
     @Container
@@ -85,20 +94,17 @@ public class AccountBalanceServerGrpcImplTest {
         AccountBalanceServiceGrpc.AccountBalanceServiceBlockingStub stub =
             AccountBalanceServiceGrpc.newBlockingStub(channel);
 
-        // Создаем аккаунт в БД
         Account account = new Account();
         account.setCode("your_account_code");
         account.setBalance(BigDecimal.valueOf(500)); // устанавливаем начальный баланс
         accountRepository.save(account);
 
-        // Выполняем запрос на изменение баланса
         AccountBalance.MessageResponse response = stub.changeAccountBalance(
             AccountBalance.MessageRequest.newBuilder()
                 .setCodeAccount("your_account_code")
                 .setAmountOfBalanceChange("100")
                 .build());
 
-        // Проверяем, что ответ содержит ожидаемый статус
         assertEquals(Status.OK.getCode().name(), response.getStatus());
         assertEquals("Updated account with code = your_account_code balance = 600.00", response.getMessage());
     }
