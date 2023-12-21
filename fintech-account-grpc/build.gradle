@@ -4,6 +4,7 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.4'
     id "io.github.lognet.grpc-spring-boot" version '5.1.5'
     id 'org.liquibase.gradle' version '2.2.0'
+    id 'jacoco'
 }
 
 application {
@@ -80,13 +81,7 @@ liquibase {
                     '?dialect=org.hibernate.dialect.PostgreSQLDialect' +
                     '&hibernate.physical_naming_strategy=org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy'
         }
-      /*  test {
-            changelogFile 'src/main/resources/db/changelog/db.changelog-test.yaml'
-            url 'jdbc:postgresql://localhost:5437/fintech-account-db'
-            referenceUrl 'hibernate:spring:hexlet.code.model.' +
-                    '?dialect=org.hibernate.dialect.PostgreSQLDialect' +
-                    '&hibernate.physical_naming_strategy=org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy'
-        }*/
+
     }
 }
 
@@ -94,24 +89,9 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-/*subprojects {
-group = 'com.workout'
-version = '0.0.1-SNAPSHOT'
-archivesBaseName = 'example'*/
-
-/*
-// Проект для первого микросервиса
-    project(':fintech-transfer') {
-        dependencies {
-            implementation 'io.github.lognet:grpc-spring-boot-starter:5.1.5'
-            // Другие зависимости для первого микросервиса
-        }
+jacocoTestReport {
+    reports {
+        xml.required = true
     }
-
-// Проект для второго микросервиса
-    project(':fintech-account') {
-        dependencies {
-            implementation 'io.github.lognet:grpc-spring-boot-starter:5.1.5'
-            // Другие зависимости для второго микросервиса
-        }*/
+}
 
