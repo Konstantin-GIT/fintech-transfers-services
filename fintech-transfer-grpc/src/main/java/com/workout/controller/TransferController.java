@@ -10,7 +10,11 @@ import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.WebRequest;
 
 import java.util.List;
 
@@ -41,7 +45,7 @@ public class TransferController {
     @ResponseStatus(CREATED)
     public void createPayment(@RequestBody @Valid TransferDto transferDto) throws RuntimeException {
         try {
-                transferService.createPayment(transferDto);
+            transferService.createPayment(transferDto);
 
         } catch (RuntimeException e) {
 
@@ -49,4 +53,10 @@ public class TransferController {
         }
     }
 
+    @ExceptionHandler({TransferFailedException.class})
+    public ResponseEntity<Object> handleTransferFailedException(
+        TransferFailedException ex, WebRequest request) {
+        return new ResponseEntity<>(ex.getMessage(), new HttpHeaders(), HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+    
 }

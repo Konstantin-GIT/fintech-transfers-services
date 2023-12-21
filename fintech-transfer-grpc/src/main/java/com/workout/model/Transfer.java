@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "transfers")
 @Data
-@EqualsAndHashCode(of = {"debitAccountCode", "creditAccountCode", "transferAmount"})
+@EqualsAndHashCode(of = {"id", "debitAccountCode", "creditAccountCode", "transferAmount"})
 @NoArgsConstructor
 @Builder
 @EntityListeners(AuditingEntityListener.class)

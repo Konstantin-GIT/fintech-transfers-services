@@ -96,7 +96,7 @@ ngOnInit() {
         },
         (error) => {
           console.error('Error:', error);
-           this.snackBar.open('Ошибка при создании перевода: ' + error.message, 'Закрыть', { duration: 5000 });
+           this.snackBar.open('Ошибка при создании перевода: ' + error.error, 'Закрыть', { duration: 5000 });
 
         }
       );
