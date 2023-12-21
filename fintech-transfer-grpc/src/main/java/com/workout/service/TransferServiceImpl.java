@@ -15,6 +15,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.workout.service.Utils.containsOnlyDigitsAndNotEmpty;
+import static io.grpc.Status.fromThrowable;
 
 @AllArgsConstructor
 @Service
@@ -48,11 +49,11 @@ public class TransferServiceImpl implements TransferService {
 
             } catch (StatusRuntimeException e) {
                 rollbackDebitOperation(debitAccountCode, transferAmount, transferId);
-                throw new TransferFailedException(e.getMessage());
+                throw new TransferFailedException(fromThrowable(e).getDescription());
             }
 
         } catch (StatusRuntimeException e) {
-            throw new TransferFailedException(e.getMessage());
+            throw new TransferFailedException(fromThrowable(e).getDescription());
 
         }
 
@@ -64,8 +65,8 @@ public class TransferServiceImpl implements TransferService {
     private void rollbackDebitOperation(String debitAccountCode, String transferAmount, String transferId) {
         try {
             accountBalanceClientGrpc.changeAccountBalance(debitAccountCode, transferAmount, transferId);
-        } catch (StatusRuntimeException ex) {
-            throw new TransferFailedException("Rollback failed:" + ex.getMessage());
+        } catch (StatusRuntimeException e) {
+            throw  new TransferFailedException(fromThrowable(e).getDescription());
         }
     }
 

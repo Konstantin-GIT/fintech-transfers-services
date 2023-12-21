@@ -96,7 +96,7 @@ ngOnInit() {
         },
         (error) => {
           console.error('Error:', error);
-           this.snackBar.open('Ошибка при создании перевода: ' + error.error, 'Закрыть', { duration: 5000 });
+           this.snackBar.open('The transfer has not been completed: ' + error.error, 'Close', { duration: 8000 });
 
         }
       );

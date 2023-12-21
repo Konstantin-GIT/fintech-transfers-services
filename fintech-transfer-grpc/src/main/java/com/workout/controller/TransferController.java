@@ -49,14 +49,9 @@ public class TransferController {
 
         } catch (RuntimeException e) {
 
-            throw new TransferFailedException("An error occurred while executing the transaction, please try again." + e.getMessage());
+            throw new TransferFailedException(e.getMessage());
         }
     }
 
-    @ExceptionHandler({TransferFailedException.class})
-    public ResponseEntity<Object> handleTransferFailedException(
-        TransferFailedException ex, WebRequest request) {
-        return new ResponseEntity<>(ex.getMessage(), new HttpHeaders(), HttpStatus.UNPROCESSABLE_ENTITY);
-    }
-    
+
 }
